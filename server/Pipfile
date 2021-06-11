@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "==0.65.2"
+pymongo = "==3.11.4"
+
+[dev-packages]
+pipenv = "*"
+black = "==21.6b0"
+isort = "*"
+pytest = "*"
+pytest-cov = "*"
+pre-commit = "*"
+uvicorn = "*"
+
+[requires]
+python_version = "3.8"
