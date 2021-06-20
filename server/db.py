@@ -11,6 +11,6 @@ MONGO_COL = os.environ["MONGO_COL"]
 
 mongo_client = pymongo.MongoClient(host=MONGO_HOST, port=int(MONGO_PORT), username=MONGO_USERNAME, password=MONGO_PASSWORD)
 
-secret_db = mongo_client[MONGO_DB]
+secret_col = mongo_client[MONGO_DB][MONGO_COL]
 
-secret_col = secret_db[MONGO_COL]
+secret_col.create_index("expiration", expireAfterSeconds=0)

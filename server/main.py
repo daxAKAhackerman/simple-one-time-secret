@@ -4,4 +4,4 @@ from endpoints import router
 
 app = FastAPI()
 
-app.include_router(router, prefix="/secret", tags=["Secret"])
+app.include_router(router, prefix="/api/secret", tags=["Secret"])

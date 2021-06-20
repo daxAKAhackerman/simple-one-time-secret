@@ -24,7 +24,8 @@ def get_secret(id: pydantic.UUID4):
 
     secret_col.delete_one({"_id": str(id)})
 
-    if not secret or secret["expiration"] <= int(datetime.now().timestamp()):
+    if not secret or secret["expiration"] <= datetime.utcnow():
         return Response(status_code=404)
+
     else:
         return secret
