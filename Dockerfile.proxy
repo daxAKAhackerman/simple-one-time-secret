@@ -1,12 +1,12 @@
-FROM node:alpine as build
+FROM node:14-alpine as build
 
 WORKDIR /build
 
 COPY ./client /build
 RUN npm ci
 
-RUN npm run build && /usr/bin/hugo
+RUN npm run build
 
-FROM nginx:alpine
+FROM nginx:latest
 
 COPY --from=build /build/dist /usr/share/nginx/html
