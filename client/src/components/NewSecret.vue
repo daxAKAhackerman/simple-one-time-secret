@@ -3,25 +3,46 @@
     <b>Secret:</b>
     <b-form-textarea v-model="secret" rows="20" max-rows="20"></b-form-textarea>
     <br />
-    <b>Expiration:</b>
+    <b>Expiration: (local time)</b>
     <b-row>
       <b-col cols="6">
-        <b-form-datepicker
-          class="text-left"
-          v-model="expirationDate"
-          required
-          placeholder="Expiration date"
-        ></b-form-datepicker>
+        <b-input-group>
+          <b-form-input
+            v-model="expirationDate"
+            type="text"
+            placeholder="YYYY-MM-DD"
+            autocomplete="off"
+            required
+          ></b-form-input>
+          <b-input-group-append>
+            <b-form-datepicker
+              v-model="expirationDate"
+              button-only
+              right
+              locale="en-US"
+            ></b-form-datepicker>
+          </b-input-group-append>
+        </b-input-group>
       </b-col>
       <b-col cols="6">
-        <b-form-timepicker
-          class="text-left"
-          v-model="expirationTime"
-          required
-          placeholder="Expiration time"
-          :hour12="false"
-          show-seconds
-        ></b-form-timepicker>
+        <b-input-group>
+          <b-form-input
+            v-model="expirationTime"
+            type="text"
+            placeholder="HH:mm:ss"
+            required
+          ></b-form-input>
+          <b-input-group-append>
+            <b-form-timepicker
+              v-model="expirationTime"
+              button-only
+              right
+              locale="en"
+              show-seconds
+              :hour12="false"
+            ></b-form-timepicker>
+          </b-input-group-append>
+        </b-input-group>
       </b-col>
     </b-row>
     <br />
@@ -36,8 +57,8 @@
       information using a single-use link. Once the secret has been viewed (or
       once the expiration is reached), the secret is deleted from the database
       and no longer accessible. In addition, the server only has access to the
-      encrypted secret and the ID of the secret. Every thing else is generated
-      client side and is never sent to the server. More precisely:
+      encrypted secret and its ID. Everything else is generated client side and
+      is never sent to the server. More precisely:
     </p>
     <ol>
       <li>
@@ -55,7 +76,7 @@
         to the server when a URL is accessed.
       </li>
       <li>
-        When the secret is retreived, the server receives the ID of the secret,
+        When the secret is retrieved, the server receives the ID of the secret,
         deletes it from the database, and returns the encrypted value back to
         the client (if it's not expired).
       </li>
@@ -92,11 +113,11 @@ export default {
       if (!expirationTime) {
         expirationTime = "00:00:00";
       }
-      const expiration = `${this.expirationDate} ${expirationTime}`;
-      const expirationDate = new Date(expiration);
+      const expirationString = `${this.expirationDate} ${expirationTime}`;
+      const expirationDate = new Date(expirationString);
       const expirationFormated = this.$moment(expirationDate).format("X");
 
-      return expirationFormated;
+      return parseInt(expirationFormated);
     },
   },
   methods: {
@@ -119,7 +140,12 @@ export default {
           );
         })
         .catch((error) => {
-          console.error(error);
+          void error;
+          this.makeToast(
+            "Something went wrong while creating your secret. Please make sure that the expiration date/time is valid.",
+            "danger",
+            5000
+          );
         });
     },
     generateString(length) {

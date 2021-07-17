@@ -17,7 +17,7 @@
         >Retrieve secret</b-button
       >
       <div v-if="showError" class="error-message">
-        &nbsp;Sorry, but this secret either doesn't exist, has already been
+        &nbsp;Sorry, but this secret either does not exist, has already been
         viewed or is expired.
       </div>
     </b-row>
@@ -47,7 +47,7 @@ export default {
         decrypted += decipher.final("utf8");
         return decrypted;
       } catch (error) {
-        console.error(error);
+        void error;
         return null;
       }
     },
@@ -92,7 +92,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .error-message {
   font-weight: bold;
   color: red;

@@ -3,6 +3,7 @@ FROM node:14-alpine as build
 WORKDIR /build
 
 COPY ./client /build
+
 RUN npm ci
 
 RUN npm run build

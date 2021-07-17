@@ -1,9 +1,8 @@
 from datetime import datetime
 
 import pydantic
+from db import get_mongo_col
 from fastapi import APIRouter, Response, status
-
-from db import secret_col
 from models import CreateSecretRequestBody
 
 router = APIRouter()
@@ -12,13 +11,17 @@ router = APIRouter()
 @router.post("", status_code=status.HTTP_201_CREATED)
 def create_secret(request_body: CreateSecretRequestBody):
 
+    secret_col = get_mongo_col()
+
     secret_col.insert_one(request_body.get_mongo_item())
 
-    return {"message": "Secret created", "id": request_body._id}
+    return {"id": request_body._id}
 
 
 @router.get("/{id}")
 def get_secret(id: pydantic.UUID4):
+
+    secret_col = get_mongo_col()
 
     secret = secret_col.find_one({"_id": str(id)})
 

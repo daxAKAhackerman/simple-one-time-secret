@@ -4,13 +4,13 @@
       <b-col offset="2" cols="8">
         <h1>One Time Secret</h1>
         <hr />
-        <b-collapse v-model="formVisible"
+        <b-collapse :visible="formVisible"
           ><NewSecret @link-generated="link = $event"
         /></b-collapse>
-        <b-collapse v-model="linkVisible"
-          ><ShowLink :link="link" @reset="reset"
+        <b-collapse :visible="linkVisible"
+          ><ShowLink :link="link" @reset="link = ''"
         /></b-collapse>
-        <b-collapse v-model="retrieveVisible"><RetrieveSecret /></b-collapse>
+        <b-collapse :visible="retrieveVisible"><RetrieveSecret /></b-collapse>
         <hr />
       </b-col>
     </b-row>
@@ -35,32 +35,15 @@ export default {
     };
   },
   computed: {
-    formVisible: {
-      get: function () {
-        return Boolean(!this.link && !location.hash);
-      },
-      set: function () {},
+    formVisible: function () {
+      return Boolean(!this.link && !location.hash);
     },
-    linkVisible: {
-      get: function () {
-        return Boolean(this.link && !location.hash);
-      },
-      set: function () {},
+    linkVisible: function () {
+      return Boolean(this.link && !location.hash);
     },
-    retrieveVisible: {
-      get: function () {
-        return Boolean(location.hash);
-      },
-      set: function () {},
-    },
-  },
-  methods: {
-    reset() {
-      this.link = "";
+    retrieveVisible: function () {
+      return Boolean(location.hash);
     },
   },
 };
 </script>
-
-<style scoped>
-</style>

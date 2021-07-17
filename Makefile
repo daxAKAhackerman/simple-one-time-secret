@@ -1,8 +1,7 @@
 SHELL := /usr/bin/env bash
 
-MONGO_USER = user
-MONGO_DB = secret
-#MONGO_PASSWORD := $(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)\n
+MONGO_USR = user
+MONGO_PWD := $(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)\n
 
 install:
 	@python3 -m pip install pipenv -U
@@ -12,22 +11,22 @@ install:
 
 generate-secrets:
 ifeq ($(wildcard ./.env),)
-	@echo MONGO_USER=$(MONGO_USER) >> .env
-	@echo MONGO_DB=$(MONGO_DB) >> .env
-	@echo MONGO_PASSWORD=$(MONGO_PASSWORD) >> .env
+	@echo MONGO_USER=$(MONGO_USR) >> .env
+	@echo MONGO_PASSWORD=$(MONGO_PWD) >> .env
 else
 	@echo "[-] Docker environment variables are already set"
 endif
+
+lint:
+	@pipenv run black --line-length=160 server
+	@pipenv run isort --profile black server
 
 test:
 	@pipenv run pytest
 
 test-coverage-report:
-	@pipenv run pytest -v --cov=server --cov-report html:cov_html
+	@pipenv run pytest --cov-report term-missing --cov=server server/tests/
 
-run-pre-commit:
-	@pipenv run pre-commit run -a
-
-#run-local: run-pre-commit
+run-local:
 run-local:
 	@cd server && pipenv run uvicorn main:app --reload

@@ -5,20 +5,20 @@
         rows="3"
         no-auto-shrink
         no-resize
-        disabled
+        readonly
         v-model="link"
       ></b-form-textarea>
       <b-button
         variant="outline-secondary"
         v-clipboard:copy="link"
         class="copy-button"
-        @click="makeToast('Link was copied to clipboard.')"
+        @click="makeToast('Link was copied to clipboard.', 'info', 2000)"
         ><b-icon-files></b-icon-files
       ></b-button>
     </div>
     <br />
     <b-button variant="outline-primary" @click="$emit('reset')"
-      >Create an other secret</b-button
+      >Create another secret</b-button
     >
   </div>
 </template>
@@ -27,19 +27,6 @@
 export default {
   name: "ShowLink",
   props: ["link"],
-  data() {
-    return {};
-  },
-  methods: {
-    makeToast(message) {
-      this.$root.$bvToast.toast(message, {
-        autoHideDelay: 2000,
-        appendToast: false,
-        variant: "outline-success",
-        noCloseButton: true,
-      });
-    },
-  },
 };
 </script>
 <style scoped>
