@@ -1,9 +1,35 @@
 version: "3.3"
 services:
+  db:
+    image: "mongo:latest"
+    restart: "unless-stopped"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - "ots-db:/data/db"
+
+  backend:
+    build:
+      context: "."
+      dockerfile: "Dockerfile.backend"
+    restart: "unless-stopped"
+    ports:
+      - "80:80"
+    environment:
+      MONGO_COL: secret
+      MONGO_DB: ots
+      MONGO_HOST: db
+      MONGO_USERNAME: user
+      MONGO_PORT: 27017
+      MONGO_PASSWORD: password
+
   web:
     build:
       context: "."
-      dockerfile: "Dockerfile.proxy"
+      dockerfile: "Dockerfile.web"
     restart: "unless-stopped"
     ports:
       - "8080:80"
@@ -12,3 +38,5 @@ services:
     depends_on:
       - "backend"
 
+volumes:
+  ots-db:
