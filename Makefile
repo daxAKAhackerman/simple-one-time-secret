@@ -11,8 +11,8 @@ install:
 
 generate-secrets:
 ifeq ($(wildcard ./.env),)
-	@echo MONGO_USER=$(MONGO_USR) >> .env
-	@echo MONGO_PASSWORD=$(MONGO_PWD) >> .env
+	@echo MONGO_USR=$(MONGO_USR) >> .env
+	@echo MONGO_PWD=$(MONGO_PWD) >> .env
 else
 	@echo "[-] Docker environment variables are already set"
 endif
