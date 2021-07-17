@@ -27,6 +27,19 @@ test:
 test-coverage-report:
 	@pipenv run pytest --cov-report term-missing --cov=server server/tests/
 
-run-local:
-run-local:
+run-local: lint
 	@cd server && pipenv run uvicorn main:app --reload
+
+deploy: generate-secrets
+	@docker-compose build
+	@docker-compose up -d
+
+update:
+	@docker-compose build
+	@docker-compose up -d
+
+start:
+	@docker-compose up -d
+
+stop:
+	@docker-compose down
