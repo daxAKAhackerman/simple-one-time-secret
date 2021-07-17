@@ -19,7 +19,7 @@ def create_secret(request_body: CreateSecretRequestBody):
 
 
 @router.get("/{id}")
-def get_secret(id: pydantic.UUID4):
+def get_secret(id: pydantic.UUID4, response: Response):
 
     secret_col = get_mongo_col()
 
@@ -28,7 +28,8 @@ def get_secret(id: pydantic.UUID4):
     secret_col.delete_one({"_id": str(id)})
 
     if not secret or secret["expiration"] <= datetime.utcnow():
-        return Response(status_code=404)
+        response.status_code = 404
+        return {"message": "Not Found"}
 
     else:
         return secret

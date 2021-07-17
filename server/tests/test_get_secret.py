@@ -8,7 +8,9 @@ from server.endpoints import get_secret
 
 def test__get_secret__valid_data__secret_returned(dummy_mongo_col):
 
-    ret = get_secret(UUID("11111111-1111-4111-a111-111111111111"))
+    response = Response()
+
+    ret = get_secret(UUID("11111111-1111-4111-a111-111111111111"), response)
 
     assert ret["_id"] == "11111111-1111-4111-a111-111111111111"
     assert isinstance(ret["expiration"], datetime)
@@ -17,13 +19,17 @@ def test__get_secret__valid_data__secret_returned(dummy_mongo_col):
 
 def test__get_secret__expired_secret__404(dummy_mongo_col):
 
-    ret: Response = get_secret(UUID("22222222-2222-4222-a222-222222222222"))
+    response = Response()
 
-    assert ret.status_code == 404
+    ret: Response = get_secret(UUID("22222222-2222-4222-a222-222222222222"), response)
+
+    assert ret == {"message": "Not Found"}
 
 
 def test__get_secret__non_existent_secret__404(dummy_mongo_col):
 
-    ret: Response = get_secret(UUID("33333333-3333-4333-a333-333333333333"))
+    response = Response()
 
-    assert ret.status_code == 404
+    ret: Response = get_secret(UUID("33333333-3333-4333-a333-333333333333"), response)
+
+    assert ret == {"message": "Not Found"}
