@@ -25,6 +25,8 @@ services:
       MONGO_USERNAME: ${MONGO_USR}
       MONGO_PORT: 27017
       MONGO_PASSWORD: ${MONGO_PWD}
+    depends_on:
+      - "db"
 
   web:
     build:
