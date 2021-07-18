@@ -11,5 +11,4 @@ class CreateSecretRequestBody(pydantic.BaseModel):
     secret: str
 
     def get_mongo_item(self):
-
         return {"_id": str(self._id), "expiration": self.expiration, "secret": self.secret}

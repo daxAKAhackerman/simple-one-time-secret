@@ -6,7 +6,7 @@ from fastapi import Response
 from server.endpoints import get_secret
 
 
-def test__get_secret__valid_data__secret_returned(dummy_mongo_col):
+def test__get_secret__valid_data__secret_returned():
 
     response = Response()
 
@@ -17,7 +17,7 @@ def test__get_secret__valid_data__secret_returned(dummy_mongo_col):
     assert ret["secret"] == "some_encrypted_secret"
 
 
-def test__get_secret__expired_secret__404(dummy_mongo_col):
+def test__get_secret__expired_secret__404():
 
     response = Response()
 
@@ -26,7 +26,7 @@ def test__get_secret__expired_secret__404(dummy_mongo_col):
     assert ret == {"message": "Not Found"}
 
 
-def test__get_secret__non_existent_secret__404(dummy_mongo_col):
+def test__get_secret__non_existent_secret__404():
 
     response = Response()
 

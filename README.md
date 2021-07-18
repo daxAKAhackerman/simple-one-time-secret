@@ -2,7 +2,7 @@
 
 > https://secret.hackerman.ca/
 
-Generate single-use, expiring links to share sensitive information.
+Generate single use, expiring links to share sensitive information.
 
 ![screenshot](https://raw.githubusercontent.com/daxAKAhackerman/simple-one-time-secret/main/resources/screenshot.png)
 
@@ -19,14 +19,25 @@ Simple One Time Secret is an application that allows to securely share informati
 
 ## Installation
 
+To clone and run this application, you'll need [Git](https://git-scm.com), [Docker](https://docs.docker.com/engine/), [Docker Compose](https://docs.docker.com/compose/) and [make](https://www.gnu.org/software/make/). From your command line:
+
 ```bash
-# Deploy the application
+# Clone this repository
+$ git clone https://github.com/daxAKAhackerman/simple-one-time-secret.git
+
+# Go into the repository
+$ cd simple-one-time-secret
+
+# Deploy the application. Default listening port is 8080, but this can be changed in the docker-compose.yml file on line 37.
 $ make deploy
 ```
 
 ## Update
 
 ```bash
+# Pull the repository
+$ git pull
+
 # Update the application
 $ make update
 ```
@@ -40,3 +51,12 @@ $ make start
 # Stop the containers
 $ make stop
 ```
+
+## You may also like...
+
+-   [Source Map Decoder](https://github.com/daxAKAhackerman/source-map-decoder) - Quickly decode source maps
+-   [XSS Catcher](https://github.com/daxAKAhackerman/XSS-Catcher) - A blind XSS detection framework that runs on Flask and VueJS
+
+---
+
+> GitHub [@daxAKAhackerman](https://github.com/daxAKAhackerman/)
