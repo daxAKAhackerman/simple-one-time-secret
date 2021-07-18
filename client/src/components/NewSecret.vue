@@ -87,7 +87,7 @@
     </ol>
     <p>
       Want more information? Good news,
-      <b-link href="https://github.com/daxAKAhackerman/one-time-secret"
+      <b-link href="https://github.com/daxAKAhackerman/simple-one-time-secret"
         >this project is open source!
       </b-link>
     </p>
