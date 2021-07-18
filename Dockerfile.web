@@ -1,0 +1,13 @@
+FROM node:14-alpine as build
+
+WORKDIR /build
+
+COPY ./client /build
+
+RUN npm ci
+
+RUN npm run build
+
+FROM nginx:1.21
+
+COPY --from=build /build/dist /usr/share/nginx/html
