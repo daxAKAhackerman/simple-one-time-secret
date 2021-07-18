@@ -2,7 +2,7 @@
   <div>
     <b-row>
       <b-col offset="2" cols="8">
-        <h1>One Time Secret</h1>
+        <h1>Simple One Time Secret</h1>
         <hr />
         <b-collapse :visible="formVisible"
           ><NewSecret @link-generated="link = $event"

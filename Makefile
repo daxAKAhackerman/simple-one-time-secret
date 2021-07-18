@@ -27,7 +27,10 @@ test:
 test-coverage-report:
 	@pipenv run pytest --cov-report term-missing --cov=server server/tests/
 
-run-local: lint
+run-web-app:
+	@npm --prefix client run serve
+
+run-backend-server: lint
 	@cd server && pipenv run uvicorn main:app --reload
 
 deploy: generate-secrets

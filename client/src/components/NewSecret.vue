@@ -53,7 +53,7 @@
     <br />
     <h2>How it works</h2>
     <p>
-      One Time Secret is an application that allows to securely share
+      Simple One Time Secret is an application that allows to securely share
       information using a single-use link. Once the secret has been viewed (or
       once the expiration is reached), the secret is deleted from the database
       and no longer accessible. In addition, the server only has access to the
