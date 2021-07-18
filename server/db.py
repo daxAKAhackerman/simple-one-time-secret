@@ -1,7 +1,6 @@
 import os
 
 import pymongo
-from tests.conftest import FakeSecretCol
 
 
 def get_mongo_col():
@@ -19,4 +18,6 @@ def get_mongo_col():
 
         return secret_col
     else:
+        from tests.conftest import FakeSecretCol
+
         return FakeSecretCol
