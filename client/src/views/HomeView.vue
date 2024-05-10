@@ -6,10 +6,10 @@
             <b-collapse :visible="formVisible">
                 <NewSecret />
             </b-collapse>
-            <!-- <b-collapse :visible="linkVisible">
-                <ShowLink :link="link" @reset="link = ''" />
+            <b-collapse :visible="linkVisible">
+                <ShowLink />
             </b-collapse>
-            <b-collapse :visible="retrieveVisible">
+            <!-- <b-collapse :visible="retrieveVisible">
                 <RetrieveSecret />
             </b-collapse> -->
             <hr />
@@ -20,14 +20,14 @@
 <script>
 import NewSecret from '../components/NewSecret.vue';
 // import RetrieveSecret from '../components/RetrieveSecret.vue';
-// import ShowLink from '../components/ShowLink.vue';
+import ShowLink from '../components/ShowLink.vue';
 import { store } from '@/store.js'
 
 
 export default {
     components: {
         NewSecret,
-        // ShowLink,
+        ShowLink,
         // RetrieveSecret,
     },
     data() {
@@ -37,10 +37,10 @@ export default {
     },
     computed: {
         formVisible() {
-            return !this.store.link && !location.hash;
+            return this.store.link === '' && !location.hash;
         },
         linkVisible() {
-            return this.store.link && !location.hash;
+            return this.store.link !== '' && !location.hash;
         },
         retrieveVisible() {
             return location.hash;
