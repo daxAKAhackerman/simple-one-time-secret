@@ -17,7 +17,7 @@ def ots_database(request: pytest.FixtureRequest) -> Iterator[Optional[dict[str, 
 
 
 @pytest.fixture
-def fastapi_app(ots_database: Optional[mock.MagicMock]):
+def fastapi_app(ots_database: dict[str, mock.MagicMock]):
     from main import app
 
     yield app

@@ -19,7 +19,7 @@ class Secret:
         return {"_id": str(self.id), "expiration": self.expiration, "secret": self.secret}
 
     @classmethod
-    def from_mongo_item(cls, _id: str, expiration: datetime, secret: str):
+    def from_mongo_item(cls, _id: str, expiration: datetime, secret: str) -> Secret:
         return Secret(id=uuid.UUID(_id), expiration=expiration, secret=secret)
 
     @property

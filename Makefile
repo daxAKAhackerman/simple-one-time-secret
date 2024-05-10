@@ -1,6 +1,7 @@
 SHELL := /usr/bin/env bash
 SRC_SERVER_DIR := server
 SRC_CLIENT_DIR := client
+TEST_DIR := $(SRC_SERVER_DIR)/tests
 
 install:
 	@python3 -m pip install pipenv -U
@@ -16,10 +17,10 @@ lint:
 	@python3 -m pipenv run isort --profile black $(SRC_SERVER_DIR)
 
 test:
-	@pipenv run pytest
+	@python3 -m pipenv run pytest $(TEST_DIR)
 
 test-coverage-report:
-	@pipenv run pytest --cov-report term-missing --cov=server server/tests/
+	@python3 -m pipenv run pytest --cov-report term-missing --cov=$(SRC_SERVER_DIR) $(TEST_DIR)
 
 run-backend:
 	@cd $(SRC_SERVER_DIR) && python3 -m pipenv run uvicorn main:app --reload
