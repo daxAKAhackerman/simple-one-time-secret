@@ -1,14 +1,27 @@
+from __future__ import annotations
+
 import uuid
+from dataclasses import dataclass, field
 from datetime import datetime
 
-import pydantic
 
-
-class CreateSecretRequestBody(pydantic.BaseModel):
-
-    _id: pydantic.UUID4 = pydantic.PrivateAttr(default_factory=uuid.uuid4)
+@dataclass
+class Secret:
     expiration: datetime
     secret: str
+    id: uuid.UUID = field(default_factory=uuid.uuid4)
 
-    def get_mongo_item(self):
-        return {"_id": str(self._id), "expiration": self.expiration, "secret": self.secret}
+    @classmethod
+    def from_create_request(cls, expiration: datetime, secret: str) -> Secret:
+        return Secret(expiration=expiration, secret=secret)
+
+    def to_mongo_item(self) -> dict[str, str | datetime]:
+        return {"_id": str(self.id), "expiration": self.expiration, "secret": self.secret}
+
+    @classmethod
+    def from_mongo_item(cls, _id: str, expiration: datetime, secret: str) -> Secret:
+        return Secret(id=uuid.UUID(_id), expiration=expiration, secret=secret)
+
+    @property
+    def mongo_id(self) -> dict[str, str]:
+        return {"_id": str(self.id)}

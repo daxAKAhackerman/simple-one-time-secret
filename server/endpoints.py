@@ -1,31 +1,30 @@
+import uuid
 from datetime import datetime
 
-import pydantic
-from db import get_mongo_col
-from fastapi import APIRouter, Response, status
-from models import CreateSecretRequestBody
+from db import SecretStore
+from fastapi import APIRouter, HTTPException, status
+from models import Secret
+from schemas import CreateSecret
 
 router = APIRouter()
 
-secret_col = get_mongo_col()
-
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_secret(request_body: CreateSecretRequestBody):
-    secret_col.insert_one(request_body.get_mongo_item())
+def create_secret(body: CreateSecret):
+    secret_store = SecretStore()
+    secret = Secret.from_create_request(**body.model_dump())
 
-    return {"id": request_body._id}
+    secret_store.put_secret(secret)
+
+    return {"id": secret.id}
 
 
 @router.get("/{id}")
-def get_secret(id: pydantic.UUID4, response: Response):
-    secret = secret_col.find_one({"_id": str(id)})
+def get_secret(id: uuid.UUID):
+    secret_store = SecretStore()
+    secret = secret_store.get_and_delete_secret_by_id(id)
 
-    secret_col.delete_one({"_id": str(id)})
+    if not secret or secret.expiration <= datetime.now():
+        raise HTTPException(404)
 
-    if not secret or secret["expiration"] <= datetime.utcnow():
-        response.status_code = 404
-        return {"message": "Not Found"}
-
-    else:
-        return secret
+    return {"secret": secret.secret}

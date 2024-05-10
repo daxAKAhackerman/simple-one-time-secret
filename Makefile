@@ -1,37 +1,35 @@
 SHELL := /usr/bin/env bash
-
-MONGO_USR = user
-MONGO_PWD := $(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)\n
+SRC_SERVER_DIR := server
+SRC_CLIENT_DIR := client
+TEST_DIR := $(SRC_SERVER_DIR)/tests
 
 install:
 	@python3 -m pip install pipenv -U
-	@pipenv install --dev
-	@pipenv run pre-commit install
+	@python3 -m pipenv install --dev
+	@python3 -m pipenv run pre-commit install
 	@npm install --prefix client
 
-generate-secrets:
-ifeq ($(wildcard ./.env),)
-	@echo MONGO_USR=$(MONGO_USR) >> .env
-	@echo MONGO_PWD=$(MONGO_PWD) >> .env
-else
-	@echo "[-] Docker environment variables are already set"
-endif
+lock-requirements:
+	@python3 -m pipenv requirements > $(SRC_SERVER_DIR)/requirements.txt
 
 lint:
-	@pipenv run black --line-length=160 server
-	@pipenv run isort --profile black server
+	@python3 -m pipenv run black --line-length=160 $(SRC_SERVER_DIR)
+	@python3 -m pipenv run isort --profile black $(SRC_SERVER_DIR)
 
 test:
-	@pipenv run pytest
+	@python3 -m pipenv run pytest $(TEST_DIR)
 
 test-coverage-report:
-	@pipenv run pytest --cov-report term-missing --cov=server server/tests/
+	@python3 -m pipenv run pytest --cov-report term-missing --cov=$(SRC_SERVER_DIR) $(TEST_DIR)
+
+run-backend:
+	@cd $(SRC_SERVER_DIR) && python3 -m pipenv run uvicorn main:app --reload
+
+run-database:
+	@docker run -p 27017:27017 --rm mongo:7.0
 
 run-web-app:
 	@npm --prefix client run serve
-
-run-backend-server: lint
-	@cd server && pipenv run uvicorn main:app --reload
 
 deploy: generate-secrets
 	@docker-compose build
