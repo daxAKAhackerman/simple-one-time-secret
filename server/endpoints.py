@@ -1,8 +1,9 @@
 import uuid
 from datetime import datetime
 
+from db import SecretStore
 from fastapi import APIRouter, HTTPException, status
-from models import Secret, SecretStore
+from models import Secret
 from schemas import CreateSecret
 
 router = APIRouter()
@@ -26,4 +27,4 @@ def get_secret(id: uuid.UUID):
     if not secret or secret.expiration <= datetime.now():
         raise HTTPException(404)
 
-    return secret
+    return {"secret": secret.secret}

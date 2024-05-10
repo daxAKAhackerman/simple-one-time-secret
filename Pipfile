@@ -14,6 +14,7 @@ pytest = "*"
 pytest-cov = "*"
 pre-commit = "*"
 uvicorn = "*"
+freezegun = "*"
 
 [requires]
 python_version = "3.12"

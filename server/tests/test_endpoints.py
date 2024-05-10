@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from unittest import mock
 
 from fastapi.testclient import TestClient
+from freezegun import freeze_time
 
 
 class TestCreateSecret:
@@ -24,11 +25,38 @@ class TestCreateSecret:
 
 
 class TestGetSecret:
-    def test__given_id__when_secret_exist_and_not_expired__then_secret_returned(self):
-        pass
+    @freeze_time("2023-03-07")
+    @mock.patch("endpoints.SecretStore")
+    def test__given_id__when_secret_exist_and_not_expired__then_secret_returned(self, SecretStoreMocker: mock.MagicMock, test_client: TestClient):
+        secret_store = SecretStoreMocker.return_value
+        secret = mock.MagicMock()
+        secret.expiration = datetime(2023, 3, 8)
+        secret.secret = "my-secret"
+        secret_store.get_and_delete_secret_by_id.return_value = secret
 
-    def test__given_id__when_does_not_exist__then_404_returned(self):
-        pass
+        response = test_client.get("api/secret/11111111-1111-4111-a111-111111111111")
 
-    def test__given_id__when_secret_exist_but_expired__then_404_returned(self):
-        pass
+        secret_store.get_and_delete_secret_by_id.assert_called_once_with(uuid.UUID("11111111-1111-4111-a111-111111111111"))
+        assert response.status_code == 200
+        assert response.json() == {"secret": "my-secret"}
+
+    @mock.patch("endpoints.SecretStore")
+    def test__given_id__when_does_not_exist__then_404_returned(self, SecretStoreMocker: mock.MagicMock, test_client: TestClient):
+        secret_store = SecretStoreMocker.return_value
+        secret_store.get_and_delete_secret_by_id.return_value = None
+
+        response = test_client.get("api/secret/11111111-1111-4111-a111-111111111111")
+
+        assert response.status_code == 404
+
+    @freeze_time("2023-03-07")
+    @mock.patch("endpoints.SecretStore")
+    def test__given_id__when_secret_exist_but_expired__then_404_returned(self, SecretStoreMocker: mock.MagicMock, test_client: TestClient):
+        secret_store = SecretStoreMocker.return_value
+        secret = mock.MagicMock()
+        secret.expiration = datetime(2023, 3, 6)
+        secret_store.get_and_delete_secret_by_id.return_value = secret
+
+        response = test_client.get("api/secret/11111111-1111-4111-a111-111111111111")
+
+        assert response.status_code == 404

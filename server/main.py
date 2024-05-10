@@ -1,8 +1,8 @@
-from db import create_index
+from db import init_db
 from endpoints import router
 from fastapi import FastAPI
 
-create_index()
+init_db()
 
 app = FastAPI()
 
