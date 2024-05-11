@@ -9,7 +9,7 @@
       ></b-form-textarea>
     </b-form-group>
 
-    <b-form-group label="Expiration: (local time)" label-for="datepicker">
+    <b-form-group label="Expiration (local time):" label-for="datepicker">
       <b-row>
         <b-col>
           <b-input-group id="datepicker">
@@ -111,7 +111,7 @@ export default {
   computed: {
     expirationTimestamp() {
       let expirationTime = this.expirationTime
-      if (!expirationTime) {
+      if (expirationTime === '') {
         expirationTime = '00:00:00'
       }
       const expirationString = `${this.expirationDate} ${expirationTime}`

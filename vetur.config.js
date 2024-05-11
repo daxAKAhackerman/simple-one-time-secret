@@ -14,7 +14,6 @@ module.exports = {
         {
             root: './client',
             package: './package.json',
-            jsconfig: './jsconfig.json',
             globalComponents: [
                 './src/components/**/*.vue'
             ]

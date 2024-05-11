@@ -4,6 +4,8 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 
+import pytz
+
 
 @dataclass
 class Secret:
@@ -13,6 +15,7 @@ class Secret:
 
     @classmethod
     def from_create_request(cls, expiration: datetime, secret: str) -> Secret:
+        expiration = expiration.replace(tzinfo=pytz.UTC)
         return Secret(expiration=expiration, secret=secret)
 
     def to_mongo_item(self) -> dict[str, str | datetime]:
@@ -20,6 +23,7 @@ class Secret:
 
     @classmethod
     def from_mongo_item(cls, _id: str, expiration: datetime, secret: str) -> Secret:
+        expiration = expiration.replace(tzinfo=pytz.UTC)
         return Secret(id=uuid.UUID(_id), expiration=expiration, secret=secret)
 
     @property
