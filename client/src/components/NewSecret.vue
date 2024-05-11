@@ -125,12 +125,9 @@ export default {
     initNewSecret() {
       const currentDate = new Date()
       currentDate.setDate(currentDate.getDate() + 7)
+      currentDate.setTime(currentDate.getTime() - currentDate.getTimezoneOffset() * 60 * 1000)
 
-      const year = currentDate.getFullYear()
-      const month = (currentDate.getMonth() + 1).toString().padStart(2, '0')
-      const day = currentDate.getDate().toString().padStart(2, '0')
-
-      this.expirationDate = year + '-' + month + '-' + day
+      this.expirationDate = currentDate.toISOString().split('T')[0]
       this.expirationTime = '00:00:00'
       this.secret = ''
     },

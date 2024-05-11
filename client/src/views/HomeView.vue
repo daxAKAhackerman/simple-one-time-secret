@@ -36,10 +36,10 @@ export default {
   },
   computed: {
     formVisible() {
-      return this.store.link === '' && !location.hash
+      return this.store.link === '' && location.hash === ''
     },
     linkVisible() {
-      return this.store.link !== '' && !location.hash
+      return this.store.link !== '' && location.hash === ''
     },
     retrieveVisible() {
       return location.hash !== ''

@@ -65,13 +65,10 @@ export default {
         })
     },
     decryptSecret(secret, passphrase) {
-      console.log(secret)
-      console.log(passphrase)
       try {
         return CryptoJS.AES.decrypt(secret, passphrase).toString(CryptoJS.enc.Utf8)
       } catch (error) {
         void error
-        return
       }
     }
   }
