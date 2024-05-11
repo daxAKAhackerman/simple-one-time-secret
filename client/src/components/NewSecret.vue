@@ -1,52 +1,61 @@
 <template>
-  <b>Secret:</b>
-  <b-form-textarea v-model="secret" rows="20" max-rows="20"></b-form-textarea>
-  <br />
-  <b>Expiration: (local time)</b>
-  <b-row>
-    <b-col cols="6">
-      <b-input-group>
-        <b-form-input
-          v-model="expirationDate"
-          type="text"
-          placeholder="YYYY-MM-DD"
-          autocomplete="off"
-          required
-        ></b-form-input>
-        <b-input-group-append>
-          <b-form-datepicker
-            v-model="expirationDate"
-            button-only
-            right
-            locale="en-US"
-          ></b-form-datepicker>
-        </b-input-group-append>
-      </b-input-group>
-    </b-col>
-    <b-col cols="6">
-      <b-input-group>
-        <b-form-input
-          v-model="expirationTime"
-          type="text"
-          placeholder="HH:mm:ss"
-          required
-        ></b-form-input>
-        <b-input-group-append>
-          <b-form-timepicker
-            v-model="expirationTime"
-            button-only
-            right
-            locale="en"
-            show-seconds
-            :hour12="false"
-          ></b-form-timepicker>
-        </b-input-group-append>
-      </b-input-group>
-    </b-col>
-  </b-row>
-  <br />
-  <b-button @click="postSecret" variant="outline-primary">Create secret link</b-button>
-  <br />
+  <b-form @submit="postSecret">
+    <b-form-group label="Secret:" label-for="secret-textarea">
+      <b-form-textarea
+        id="secret-textarea"
+        v-model="secret"
+        rows="20"
+        max-rows="20"
+      ></b-form-textarea>
+    </b-form-group>
+
+    <b-form-group label="Expiration: (local time)" label-for="datepicker">
+      <b-row>
+        <b-col>
+          <b-input-group id="datepicker">
+            <b-form-input
+              v-model="expirationDate"
+              type="text"
+              placeholder="YYYY-MM-DD"
+              autocomplete="off"
+              required
+            ></b-form-input>
+            <b-input-group-append variant="primary">
+              <b-form-datepicker
+                v-model="expirationDate"
+                button-only
+                right
+                locale="en-US"
+                button-variant="outline-primary"
+              ></b-form-datepicker>
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+        <b-col>
+          <b-input-group>
+            <b-form-input
+              v-model="expirationTime"
+              type="text"
+              placeholder="HH:mm:ss"
+              required
+            ></b-form-input>
+            <b-input-group-append>
+              <b-form-timepicker
+                v-model="expirationTime"
+                button-only
+                right
+                locale="en"
+                button-variant="outline-primary"
+                show-seconds
+                :hour12="false"
+              ></b-form-timepicker>
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+      </b-row>
+    </b-form-group>
+    <b-button type="submit" block variant="outline-primary">Create secret link</b-button>
+  </b-form>
   <br />
   <h2>How it works</h2>
   <p>
@@ -125,7 +134,8 @@ export default {
       this.expirationTime = '00:00:00'
       this.secret = ''
     },
-    postSecret() {
+    postSecret(event) {
+      event.preventDefault()
       const path = '/api/secret'
 
       const passphrase = this.generateString(32)

@@ -1,6 +1,6 @@
 <template>
-  <b-row>
-    <b-col offset="2" cols="8">
+  <b-container>
+    <b-card>
       <h1>Simple One Time Secret</h1>
       <hr />
       <b-collapse :visible="formVisible">
@@ -13,8 +13,8 @@
         <RetrieveSecret />
       </b-collapse>
       <hr />
-    </b-col>
-  </b-row>
+    </b-card>
+  </b-container>
 </template>
 
 <script>
@@ -47,17 +47,3 @@ export default {
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-textarea {
-  background-color: #edf6ff !important;
-}
-</style>

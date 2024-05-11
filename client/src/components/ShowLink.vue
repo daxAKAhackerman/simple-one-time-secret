@@ -7,12 +7,14 @@
       readonly
       v-model="store.link"
     ></b-form-textarea>
-    <b-button variant="outline-secondary" class="copy-button" @click="copyToClipboard"
+    <b-button variant="outline-primary" class="copy-button" @click="copyToClipboard"
       ><b-icon-files></b-icon-files
     ></b-button>
   </div>
   <br />
-  <b-button variant="outline-primary" @click="store.setLink('')">Create another secret</b-button>
+  <b-button block variant="outline-primary" @click="store.setLink('')"
+    >Create another secret</b-button
+  >
 </template>
 
 <script>
@@ -29,7 +31,7 @@ export default {
   methods: {
     copyToClipboard() {
       navigator.clipboard.writeText(this.store.link)
-      makeToast(this, 'Link was copied to clipboard.', 'info')
+      makeToast(this, 'The link was copied to your clipboard.', 'primary')
     }
   }
 }
@@ -37,8 +39,8 @@ export default {
 <style scoped>
 .copy-button {
   position: absolute;
-  bottom: 9%;
-  left: 95.5%;
+  bottom: 0.5rem;
+  right: 0.5rem;
   opacity: 0.25;
   filter: alpha(opacity=25);
   transition: opacity 0.25s ease-in-out;

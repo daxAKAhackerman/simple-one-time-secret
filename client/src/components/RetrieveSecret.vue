@@ -3,14 +3,12 @@
     <b-form-textarea v-model="secret" rows="10" max-rows="10" readonly></b-form-textarea>
     <br />
   </b-collapse>
-  <b-row class="no-margin" align-v="center">
-    <b-button variant="outline-primary" :disabled="buttonDisabled" @click="getSecret"
-      >Retrieve secret</b-button
-    >
-    <div v-if="showError" class="error-message">
-      &nbsp;Sorry, but this secret either does not exist, has already been viewed or is expired.
-    </div>
-  </b-row>
+  <div v-if="showError" class="error-message">
+    &nbsp;Sorry, but this secret either does not exist, has already been viewed or is expired.
+  </div>
+  <b-button v-else block variant="outline-primary" :disabled="buttonDisabled" @click="getSecret"
+    >Retrieve secret</b-button
+  >
 </template>
 
 <script>
@@ -82,11 +80,6 @@ export default {
 <style scoped>
 .error-message {
   font-weight: bold;
-  color: red;
-}
-
-.no-margin {
-  margin-left: 0px !important;
-  margin-right: 0px !important;
+  color: #dc3545;
 }
 </style>
