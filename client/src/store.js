@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
-  link: "",
+  link: '',
   setLink(link) {
     this.link = link
   }
