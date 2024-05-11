@@ -2,6 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from unittest import mock
 
+import pytz
 from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
@@ -30,7 +31,7 @@ class TestGetSecret:
     def test__given_id__when_secret_exist_and_not_expired__then_secret_returned(self, SecretStoreMocker: mock.MagicMock, test_client: TestClient):
         secret_store = SecretStoreMocker.return_value
         secret = mock.MagicMock()
-        secret.expiration = datetime(2023, 3, 8)
+        secret.expiration = datetime(2023, 3, 8, tzinfo=pytz.UTC)
         secret.secret = "my-secret"
         secret_store.get_and_delete_secret_by_id.return_value = secret
 
@@ -54,7 +55,7 @@ class TestGetSecret:
     def test__given_id__when_secret_exist_but_expired__then_404_returned(self, SecretStoreMocker: mock.MagicMock, test_client: TestClient):
         secret_store = SecretStoreMocker.return_value
         secret = mock.MagicMock()
-        secret.expiration = datetime(2023, 3, 6)
+        secret.expiration = datetime(2023, 3, 6, tzinfo=pytz.UTC)
         secret_store.get_and_delete_secret_by_id.return_value = secret
 
         response = test_client.get("api/secret/11111111-1111-4111-a111-111111111111")

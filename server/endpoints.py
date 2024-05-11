@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from db import SecretStore
 from fastapi import APIRouter, HTTPException, status
@@ -24,7 +24,7 @@ def get_secret(id: uuid.UUID):
     secret_store = SecretStore()
     secret = secret_store.get_and_delete_secret_by_id(id)
 
-    if not secret or secret.expiration <= datetime.now():
+    if not secret or secret.expiration <= datetime.now(UTC):
         raise HTTPException(404)
 
     return {"secret": secret.secret}

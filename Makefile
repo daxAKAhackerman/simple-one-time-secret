@@ -7,7 +7,7 @@ install:
 	@python3 -m pip install pipenv -U
 	@python3 -m pipenv install --dev
 	@python3 -m pipenv run pre-commit install
-	@npm install --prefix client
+	@npm install --prefix $(SRC_CLIENT_DIR)
 
 lock-requirements:
 	@python3 -m pipenv requirements > $(SRC_SERVER_DIR)/requirements.txt
@@ -15,6 +15,8 @@ lock-requirements:
 lint:
 	@python3 -m pipenv run black --line-length=160 $(SRC_SERVER_DIR)
 	@python3 -m pipenv run isort --profile black $(SRC_SERVER_DIR)
+	@npm run --prefix $(SRC_CLIENT_DIR) lint
+	@npm run --prefix $(SRC_CLIENT_DIR) format
 
 test:
 	@python3 -m pipenv run pytest $(TEST_DIR)
@@ -25,19 +27,14 @@ test-coverage-report:
 run-backend:
 	@cd $(SRC_SERVER_DIR) && python3 -m pipenv run uvicorn main:app --reload
 
+build-frontend:
+	@npm run --prefix $(SRC_CLIENT_DIR) build
+
+run-frontend:
+	@npm run --prefix $(SRC_CLIENT_DIR) dev
+
 run-database:
 	@docker run -p 27017:27017 --rm mongo:7.0
-
-run-web-app:
-	@npm --prefix client run serve
-
-deploy: generate-secrets
-	@docker-compose build
-	@docker-compose up -d
-
-update:
-	@docker-compose build
-	@docker-compose up -d
 
 start:
 	@docker-compose up -d
