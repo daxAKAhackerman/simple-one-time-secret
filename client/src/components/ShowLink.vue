@@ -1,13 +1,18 @@
 <template>
   <div class="secret-link">
     <b-form-textarea
-      rows="3"
+      rows="4"
       no-auto-shrink
       no-resize
       readonly
       v-model="store.link"
     ></b-form-textarea>
-    <b-button variant="outline-primary" class="copy-button" @click="copyToClipboard"
+    <b-button
+      variant="outline-primary"
+      class="copy-button"
+      v-b-tooltip.hover
+      title="Copy to clipboard"
+      @click="copyToClipboard"
       ><b-icon-files></b-icon-files
     ></b-button>
   </div>
