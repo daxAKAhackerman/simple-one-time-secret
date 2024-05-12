@@ -4,11 +4,11 @@ server {
     server_name  localhost;
 
     location /api/ {
-        proxy_pass http://backend/api/;
+        proxy_pass http://localhost:8000/api/;
     }
 
     location / {
-        root   /usr/share/nginx/html;
+        root   /frontend;
         index  index.html index.htm;
     }
 
