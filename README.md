@@ -17,7 +17,7 @@ Simple One Time Secret is an application that allows to securely share informati
 
 ## Installation
 
-To clone and run this application, you'll need [Git](https://git-scm.com), [Docker](https://docs.docker.com/engine/), [Docker Compose](https://docs.docker.com/compose/) and [make](https://www.gnu.org/software/make/). From your command line:
+To clone and run this application, you'll need [Git](https://git-scm.com), [Docker](https://docs.docker.com/engine/), and optionally [make](https://www.gnu.org/software/make/). From your command line:
 
 ```bash
 # Clone this repository
@@ -26,8 +26,16 @@ $ git clone https://github.com/daxAKAhackerman/simple-one-time-secret.git
 # Go into the repository
 $ cd simple-one-time-secret
 
-# Deploy the application. Default listening port is 8080, but this can be changed in the docker-compose.yml file on line 37.
-$ make deploy
+# All of the following commands are using make. If you are on a system where make is not available, simply have a look into the Makefile and manually run the required commands (under build, start or stop)
+
+# If you've never run the application, build it
+$ make
+
+# Start the application. It will listen to port 8080.
+$ make start
+
+# Stop the application when you're done
+$ make stop
 ```
 
 ## Update
@@ -36,24 +44,14 @@ $ make deploy
 # Pull the repository
 $ git pull
 
-# Update the application
-$ make update
-```
-
-## Start/Stop containers
-
-```bash
-# Start the containers
-$ make start
-
-# Stop the containers
-$ make stop
+# Stop, build and start the application
+$ make stop && make && make start
 ```
 
 ## You may also like...
 
--   [Source Map Decoder](https://github.com/daxAKAhackerman/source-map-decoder) - Quickly decode source maps
 -   [XSS Catcher](https://github.com/daxAKAhackerman/XSS-Catcher) - A blind XSS detection framework that runs on Flask and VueJS
+-   [Source Map Decoder](https://github.com/daxAKAhackerman/source-map-decoder) - Quickly decode source maps
 
 ---
 
