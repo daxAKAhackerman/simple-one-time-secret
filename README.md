@@ -45,7 +45,7 @@ $ make stop
 $ git pull
 
 # Stop, build and start the application
-$ make stop && make && make start
+$ make stop; make && make start
 ```
 
 ## You may also like...
