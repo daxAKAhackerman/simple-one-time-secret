@@ -47,3 +47,4 @@ start:
 
 stop:
 	docker stop simpleonetimesecret
+	docker rm simpleonetimesecret
