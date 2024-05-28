@@ -17,7 +17,18 @@ Simple One Time Secret is an application that allows to securely share informati
 
 ## Installation
 
-To clone and run this application, you'll need [Git](https://git-scm.com), [Docker](https://docs.docker.com/engine/), and optionally [make](https://www.gnu.org/software/make/). From your command line:
+The easiest way of running Simple One Time Secret is by using the Dockerhub image (you'll need [Docker](https://docs.docker.com/engine/)):
+
+```bash
+# Running the app by exposing it on port 8080
+$ docker run -p 8080:80 daxhackerman/simple-one-time-secret
+
+# By default, the container has no persistence. If you need some, you can setup a volume
+$ docker volume create simpleonetimesecret-db
+$ docker run -p 8080:80 -v simpleonetimesecret-db:/data/db -d --name simpleonetimesecret daxhackerman/simple-one-time-secret
+```
+
+If you wish to build the image yourself, you'll need [Git](https://git-scm.com), and optionally [make](https://www.gnu.org/software/make/). From your command line:
 
 ```bash
 # Clone this repository
@@ -36,16 +47,9 @@ $ make start
 
 # Stop the application when you're done
 $ make stop
-```
 
-## Update
-
-```bash
-# Pull the repository
-$ git pull
-
-# Stop, build and start the application
-$ make stop; make && make start
+# You can update the application when needed
+$ git pull && make stop; make && make start
 ```
 
 ## You may also like...
