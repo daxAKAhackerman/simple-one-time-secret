@@ -17,7 +17,7 @@ Simple One Time Secret is an application that allows to securely share informati
 
 ## Installation
 
-The easiest way of running Simple One Time Secret is by using the Dockerhub image as such (you'll need [Docker](https://docs.docker.com/engine/)):
+The easiest way of running Simple One Time Secret is by using the Dockerhub image (you'll need [Docker](https://docs.docker.com/engine/)):
 
 ```bash
 # Running the app by exposing it on port 8080
