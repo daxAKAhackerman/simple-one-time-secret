@@ -55,7 +55,6 @@ $ git pull && make stop; make && make start
 ## You may also like...
 
 -   [XSS Catcher](https://github.com/daxAKAhackerman/XSS-Catcher) - A blind XSS detection framework that runs on Flask and VueJS
--   [Source Map Decoder](https://github.com/daxAKAhackerman/source-map-decoder) - Quickly decode source maps
 
 ---
 
