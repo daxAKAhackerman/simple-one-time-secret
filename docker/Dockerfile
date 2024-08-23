@@ -1,6 +1,8 @@
 # Build the frontend
-FROM node:22.1-alpine3.18 as build
+FROM node:22.1-alpine3.18 AS build
 
+ARG TOR_LINK
+ENV VITE_TOR_LINK=$TOR_LINK
 WORKDIR /build
 COPY ./client /build
 RUN npm ci
@@ -10,7 +12,7 @@ RUN npm run build
 FROM ubuntu:22.04
 
 # Install dependencies
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y software-properties-common python3 python3-launchpadlib gnupg curl
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
@@ -28,7 +30,7 @@ COPY --from=build /build/dist /frontend
 COPY ./docker/default /etc/nginx/sites-available/default
 
 # Setup FastAPI
-ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /backend
 COPY ./server /backend
 RUN python3.12 -m pip install --no-cache-dir --upgrade -r /backend/requirements.txt

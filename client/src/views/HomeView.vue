@@ -14,6 +14,14 @@
       </b-collapse>
       <hr />
     </b-card>
+    <b-link v-if="showTorLink" :href="torLink"
+      ><b-img
+        v-b-tooltip.hover
+        title="Use Simple One Time Secret over TOR instead to share secrets anonymously"
+        class="tor-logo"
+        src="/src/assets/tor_logo.png"
+      ></b-img
+    ></b-link>
   </b-container>
 </template>
 
@@ -43,7 +51,21 @@ export default {
     },
     retrieveVisible() {
       return location.hash !== ''
+    },
+    torLink() {
+      return import.meta.env.VITE_TOR_LINK
+    },
+    showTorLink() {
+      return !location.hostname.endsWith('.onion') && this.torLink
     }
   }
 }
 </script>
+<style scoped>
+.tor-logo {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  height: 50px;
+}
+</style>
