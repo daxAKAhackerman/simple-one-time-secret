@@ -8,7 +8,8 @@
 
 # Supported tags and respective `Dockerfile` links
 
--	[`1.3.1`, `latest`](https://github.com/daxAKAhackerman/simple-one-time-secret/blob/d93007381c29cd3f6d2d01b66eb8fa3334cb7949/docker/Dockerfile)
+-	[`1.4.0`, `latest`](https://github.com/daxAKAhackerman/simple-one-time-secret/blob/25f37b56f9f44bda7a837daace12d00c2f2c3668/docker/Dockerfile)
+-	[`1.3.1`](https://github.com/daxAKAhackerman/simple-one-time-secret/blob/d93007381c29cd3f6d2d01b66eb8fa3334cb7949/docker/Dockerfile)
 
 # Quick reference (cont.)
 
