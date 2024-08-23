@@ -1,5 +1,9 @@
 # Simple One Time Secret
 
+> https://secret.hackerman.ca/
+
+> https://secretrpor3nhh7m3duwk67xjmqyy4nguxxfgihxsxgmqci3f3ew6zid.onion/
+
 Generate single use, expiring links to share sensitive information.
 
 ![screenshot](https://raw.githubusercontent.com/daxAKAhackerman/simple-one-time-secret/main/resources/screenshot.png)
@@ -39,6 +43,9 @@ $ cd simple-one-time-secret
 
 # All of the following commands are using make. If you are on a system where make is not available, simply have a look into the Makefile and manually run the required commands (under build, start or stop)
 
+# If you want to add a clickable icon at the bottom of the page that links to a TOR URL hosting Simple One Time Secret, export the URL
+$ export TOR_LINK=http://my-onion-address.onion/
+
 # If you've never run the application, build it
 $ make
 
@@ -49,7 +56,7 @@ $ make start
 $ make stop
 
 # You can update the application when needed
-$ git pull && make stop; make && make start
+$ git pull && make && make stop; make start
 ```
 
 ## You may also like...
