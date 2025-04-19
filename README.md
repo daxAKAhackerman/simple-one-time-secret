@@ -1,5 +1,7 @@
 # Simple One Time Secret
 
+> https://secret.hackerman.ca/
+
 Generate single use, expiring links to share sensitive information.
 
 ![screenshot](https://raw.githubusercontent.com/daxAKAhackerman/simple-one-time-secret/main/resources/screenshot.png)
