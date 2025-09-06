@@ -177,7 +177,7 @@ export default {
         )
       )
 
-      const link = `${window.location.origin}#${data}`
+      const link = `${window.location.origin}/#${data}`
 
       this.store.setLink(link)
     }
