@@ -13,8 +13,7 @@
 
 <script>
 import axios from 'axios'
-import pako from 'pako'
-import * as CryptoJS from 'crypto-js'
+import { base64ToBytes, base64UrlToBytes } from '@/crypto.js'
 
 export default {
   name: 'RetrieveSecret',
@@ -27,49 +26,40 @@ export default {
     }
   },
   methods: {
-    getSecret() {
-      const b64String = window.location.hash.slice(1)
+    async getSecret() {
+      const fragment = window.location.hash.slice(1)
+      const [uuid, base64UrlKey] = fragment.split('.')
 
-      const decodedString = String.fromCharCode.apply(
-        null,
-        pako.inflate(
-          new Uint8Array(
-            atob(decodeURIComponent(b64String))
-              .split('')
-              .map((x) => x.charCodeAt(0))
-          )
-        )
-      )
+      if (!uuid || !base64UrlKey) {
+        this.buttonDisabled = true
+        this.showError = true
+        return
+      }
 
-      const encryptionParams = decodedString.split(';')
-      const uuid = encryptionParams[0]
-      const passhprase = encryptionParams[1]
-
-      axios
-        .get(`/api/secret/${uuid}`)
-        .then((response) => {
-          const secret = this.decryptSecret(response.data.secret, passhprase)
-
-          if (secret !== null) {
-            this.secret = secret
-            this.showSecret = true
-            this.buttonDisabled = true
-          } else {
-            throw new Error('Bad decryption')
-          }
-        })
-        .catch((error) => {
-          void error
-          this.buttonDisabled = true
-          this.showError = true
-        })
-    },
-    decryptSecret(secret, passphrase) {
       try {
-        return CryptoJS.AES.decrypt(secret, passphrase).toString(CryptoJS.enc.Utf8)
+        const response = await axios.get(`/api/secret/${uuid}`)
+        const secret = await this.decryptSecret(response.data.secret, base64UrlKey)
+
+        this.secret = secret
+        this.showSecret = true
+        this.buttonDisabled = true
       } catch (error) {
         void error
+        this.buttonDisabled = true
+        this.showError = true
       }
+    },
+    async decryptSecret(ciphertextB64, base64UrlKey) {
+      const keyBytes = base64UrlToBytes(base64UrlKey)
+      const combined = base64ToBytes(ciphertextB64)
+      const iv = combined.subarray(0, 12)
+      const ciphertext = combined.subarray(12)
+
+      const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, [
+        'decrypt'
+      ])
+      const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext)
+      return new TextDecoder().decode(plaintext)
     }
   }
 }

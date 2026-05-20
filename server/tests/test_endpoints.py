@@ -8,6 +8,7 @@ from freezegun import freeze_time
 
 
 class TestCreateSecret:
+    @freeze_time("2024-05-14")
     @mock.patch("endpoints.SecretStore")
     @mock.patch("endpoints.Secret.from_create_request")
     def test__given_expiration_and_secret__then_secret_created(
@@ -23,6 +24,24 @@ class TestCreateSecret:
         secret_store.put_secret.assert_called_once_with(secret)
         assert response.status_code == 201
         assert response.json() == {"id": "11111111-1111-4111-a111-111111111111"}
+
+    @freeze_time("2024-05-14")
+    def test__given_expiration_in_the_past__then_422_returned(self, test_client: TestClient):
+        response = test_client.post("api/secret", json={"expiration": 1715472000, "secret": "my-secret"})
+
+        assert response.status_code == 422
+
+    @freeze_time("2024-05-14")
+    def test__given_expiration_too_far_in_the_future__then_422_returned(self, test_client: TestClient):
+        response = test_client.post("api/secret", json={"expiration": 1718668800, "secret": "my-secret"})
+
+        assert response.status_code == 422
+
+    @freeze_time("2024-05-14")
+    def test__given_secret_too_large__then_422_returned(self, test_client: TestClient):
+        response = test_client.post("api/secret", json={"expiration": 1715745600, "secret": "x" * 200_001})
+
+        assert response.status_code == 422
 
 
 class TestGetSecret:

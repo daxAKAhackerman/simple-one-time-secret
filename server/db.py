@@ -37,9 +37,8 @@ class SecretStore:
         return secret
 
     def get_and_delete_secret_by_id(self, id: uuid.UUID) -> Optional[Secret]:
-        mongo_item = self.secret_collection.find_one({"_id": str(id)})
+        mongo_item = self.secret_collection.find_one_and_delete({"_id": str(id)})
 
         if mongo_item:
-            secret = Secret.from_mongo_item(**mongo_item)
-            self.secret_collection.delete_one(secret.mongo_id)
-            return secret
+            return Secret.from_mongo_item(**mongo_item)
+        return None
