@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 fastapi = "==0.111.0"
-pymongo = "==4.7.2"
+pymongo = "==4.17.0"
 pytz = "==2024.1"
 
 [dev-packages]
