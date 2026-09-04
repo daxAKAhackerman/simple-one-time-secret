@@ -2,13 +2,12 @@ SHELL := /usr/bin/env bash
 SRC_SERVER_DIR := server
 SRC_CLIENT_DIR := client
 TEST_DIR := $(SRC_SERVER_DIR)/tests
-TOR_LINK ?=
 
 .PHONY: build start stop install lock-requirements lint test test-coverage-report run-backend build-frontend run-frontend run-database
 
 build:
 	docker volume create simpleonetimesecret-db
-	docker build -t simpleonetimesecret -f docker/Dockerfile --build-arg="TOR_LINK=${TOR_LINK}" .
+	docker build -t simpleonetimesecret -f docker/Dockerfile .
 
 install:
 	python3 -m pip install pipenv -U

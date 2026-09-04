@@ -1,8 +1,6 @@
 # Build the frontend
 FROM node:22.1-alpine3.18 AS build
 
-ARG TOR_LINK
-ENV VITE_TOR_LINK=$TOR_LINK
 WORKDIR /build
 COPY ./client /build
 RUN npm ci
@@ -34,8 +32,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /backend
 COPY ./server /backend
 RUN python3.12 -m pip install --no-cache-dir --upgrade -r /backend/requirements.txt
+RUN chown -R nobody:nogroup /backend
 
 # Setup MongoDB
 RUN mkdir -p /data/db
+RUN chown -R mongodb:mongodb /data/db
 
 ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
