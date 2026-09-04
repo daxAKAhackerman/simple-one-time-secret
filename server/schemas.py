@@ -7,9 +7,6 @@ from pydantic import AfterValidator, BaseModel, Field
 
 def is_less_than_one_year_away(value: datetime) -> datetime:
     today = datetime.now(tz=timezone.utc)
-    print(f"Today: {today}")
-    print(f"Data: {value}")
-    print(f"Delta: {today + relativedelta(months=1)}")
     if value > today + relativedelta(months=1):
         raise ValueError("Expiration must be less than a month")
     return value

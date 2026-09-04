@@ -54,6 +54,61 @@ $ make stop
 $ git pull && make && make stop; make start
 ```
 
+## Reverse proxy
+
+It is recommended to put Simple One Time Secret behind a reverse proxy such as NGINX to handle SSL/TLS certificates, security headers, rate limiting, etc. Here is an example configuration to get you started:
+`/etc/nginx/nginx.conf`
+
+```
+...
+http {
+...
+  limit_req_zone $binary_remote_addr zone=secretlimit:10m rate=10r/s;
+...
+}
+...
+```
+
+`/etc/nginx/sites-enabled/secret`
+
+```
+server {
+  server_name secret.hackerman.ca;
+
+  add_header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests";
+  add_header Referrer-Policy no-referrer;
+  add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
+  add_header X-Content-Type-Options "nosniff";
+  add_header X-Frame-Options "DENY";
+  add_header Cross-Origin-Resource-Policy "same-origin";
+
+  location / {
+    proxy_pass http://localhost:8080;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+
+  limit_req zone=secretlimit burst=20 nodelay;
+
+  listen 443 ssl;
+  ssl_certificate /etc/letsencrypt/live/secret.hackerman.ca/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/secret.hackerman.ca/privkey.pem;
+  include /etc/letsencrypt/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+server {
+  if ($host = secret.hackerman.ca) {
+    return 301 https://$host$request_uri;
+  }
+
+  server_name secret.hackerman.ca;
+  listen 80;
+  return 404;
+}
+```
+
 ## You may also like...
 
 - [XSS Catcher](https://github.com/daxAKAhackerman/XSS-Catcher) - A blind XSS detection and XSS data capture framework
