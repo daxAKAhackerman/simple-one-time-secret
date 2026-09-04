@@ -57,6 +57,7 @@ $ git pull && make && make stop; make start
 ## Reverse proxy
 
 It is recommended to put Simple One Time Secret behind a reverse proxy such as NGINX to handle SSL/TLS certificates, security headers, rate limiting, etc. Here is an example configuration to get you started:
+
 `/etc/nginx/nginx.conf`
 
 ```
