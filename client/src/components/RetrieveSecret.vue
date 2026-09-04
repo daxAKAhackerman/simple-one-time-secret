@@ -29,9 +29,8 @@ export default {
     async getSecret() {
       const b64String = window.location.hash.slice(1)
 
-      const decodedString = String.fromCharCode.apply(
-        null,
-        pako.inflate(Uint8Array.fromBase64(decodeURIComponent(b64String)))
+      const decodedString = atob(
+        pako.inflate(Uint8Array.fromBase64(decodeURIComponent(b64String))).toBase64()
       )
 
       const encryptionParams = decodedString.split(';')

@@ -181,12 +181,7 @@ export default {
     },
     generateLink(uuid, key, iv) {
       const data = encodeURIComponent(
-        btoa(
-          String.fromCharCode.apply(
-            null,
-            new Uint8Array(pako.deflate(`${uuid};${iv.toBase64()};${key.toBase64()}`))
-          )
-        )
+        new Uint8Array(pako.deflate(`${uuid};${iv.toBase64()};${key.toBase64()}`)).toBase64()
       )
 
       const link = `${window.location.origin}/#${data}`
