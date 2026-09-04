@@ -49,20 +49,19 @@ class TestSecretStore:
     def test__get_and_delete_secret_by_id__given_id__when_exist__then_secret_deleted_and_returned(self, from_mongo_item_mocker: mock.MagicMock):
         secret_store = SecretStore()
         secret_collection = cast(mock.MagicMock, secret_store.secret_collection)
-        secret_collection.find_one.return_value = {"some": "mongo_item"}
+        secret_collection.find_one_and_delete.return_value = {"some": "mongo_item"}
         secret = from_mongo_item_mocker.return_value
 
         ret = secret_store.get_and_delete_secret_by_id(uuid.UUID("11111111-1111-4111-a111-111111111111"))
 
-        secret_collection.find_one.assert_called_once_with({"_id": "11111111-1111-4111-a111-111111111111"})
+        secret_collection.find_one_and_delete.assert_called_once_with({"_id": "11111111-1111-4111-a111-111111111111"})
         from_mongo_item_mocker.assert_called_once_with(some="mongo_item")
-        secret_collection.delete_one.assert_called_once_with(secret.mongo_id)
         assert ret == secret
 
     def test__get_and_delete_secret_by_id__given_id__when_not_exist__then_none_returned(self):
         secret_store = SecretStore()
         secret_collection = cast(mock.MagicMock, secret_store.secret_collection)
-        secret_collection.find_one.return_value = None
+        secret_collection.find_one_and_delete.return_value = None
 
         secret = secret_store.get_and_delete_secret_by_id(uuid.UUID("11111111-1111-4111-a111-111111111111"))
 

@@ -1,6 +1,5 @@
 import os
 import uuid
-from typing import Optional
 
 import pymongo
 from models import Secret
@@ -36,10 +35,9 @@ class SecretStore:
         self.secret_collection.insert_one(secret.to_mongo_item())
         return secret
 
-    def get_and_delete_secret_by_id(self, id: uuid.UUID) -> Optional[Secret]:
-        mongo_item = self.secret_collection.find_one({"_id": str(id)})
+    def get_and_delete_secret_by_id(self, id: uuid.UUID) -> Secret | None:
+        mongo_item = self.secret_collection.find_one_and_delete({"_id": str(id)})
 
         if mongo_item:
             secret = Secret.from_mongo_item(**mongo_item)
-            self.secret_collection.delete_one(secret.mongo_id)
             return secret
