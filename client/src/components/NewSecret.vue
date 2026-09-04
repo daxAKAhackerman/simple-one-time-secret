@@ -93,7 +93,6 @@
 </template>
 <script>
 import axios from 'axios'
-import * as CryptoJS from 'crypto-js'
 import pako from 'pako'
 import { store } from '@/store.js'
 import { makeToast } from '@/helpers.js'
@@ -131,19 +130,26 @@ export default {
       this.expirationTime = '00:00:00'
       this.secret = ''
     },
-    postSecret(event) {
+    async postSecret(event) {
       event.preventDefault()
       const path = '/api/secret'
 
-      const passphrase = this.generateString(32)
-      const secret = this.encryptSecret(this.secret, passphrase)
+      const key = new Uint8Array(32)
+      const iv = new Uint8Array(12)
+      self.crypto.getRandomValues(key)
+      self.crypto.getRandomValues(iv)
 
-      const payload = { expiration: this.expirationTimestamp, secret }
+      const secret = await this.encryptSecret(this.secret, key, iv)
+
+      const payload = {
+        expiration: this.expirationTimestamp,
+        secret: new Uint8Array(secret).toBase64()
+      }
 
       axios
         .post(path, payload)
         .then((response) => {
-          this.generateLink(response.data.id, passphrase)
+          this.generateLink(response.data.id, key, iv)
           this.initNewSecret()
         })
         .catch((error) => {
@@ -155,26 +161,27 @@ export default {
           )
         })
     },
-    generateString(length) {
-      let result = ''
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    async encryptSecret(data, key, iv) {
+      const importedKey = await self.crypto.subtle.importKey(
+        'raw',
+        key,
+        { name: 'AES-GCM' },
+        false,
+        ['encrypt']
+      )
+      const encodedData = Uint8Array.fromBase64(btoa(data))
 
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length))
-      }
+      const encrypted = await self.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        importedKey,
+        encodedData
+      )
 
-      return result
+      return encrypted
     },
-    encryptSecret(secret, passphrase) {
-      const encrypted = CryptoJS.AES.encrypt(secret, passphrase)
-
-      return encrypted.toString()
-    },
-    generateLink(uuid, passphrase) {
+    generateLink(uuid, key, iv) {
       const data = encodeURIComponent(
-        btoa(
-          String.fromCharCode.apply(null, new Uint16Array(pako.deflate(`${uuid};${passphrase}`)))
-        )
+        new Uint8Array(pako.deflate(`${uuid};${iv.toBase64()};${key.toBase64()}`)).toBase64()
       )
 
       const link = `${window.location.origin}/#${data}`
