@@ -14,7 +14,6 @@
 <script>
 import axios from 'axios'
 import pako from 'pako'
-import * as CryptoJS from 'crypto-js'
 
 export default {
   name: 'RetrieveSecret',
@@ -27,36 +26,33 @@ export default {
     }
   },
   methods: {
-    getSecret() {
+    async getSecret() {
       const b64String = window.location.hash.slice(1)
 
       const decodedString = String.fromCharCode.apply(
         null,
-        pako.inflate(
-          new Uint8Array(
-            atob(decodeURIComponent(b64String))
-              .split('')
-              .map((x) => x.charCodeAt(0))
-          )
-        )
+        pako.inflate(Uint8Array.fromBase64(decodeURIComponent(b64String)))
       )
 
       const encryptionParams = decodedString.split(';')
       const uuid = encryptionParams[0]
-      const passhprase = encryptionParams[1]
+      const iv = encryptionParams[1]
+      const key = encryptionParams[2]
 
       axios
         .get(`/api/secret/${uuid}`)
         .then((response) => {
-          const secret = this.decryptSecret(response.data.secret, passhprase)
-
-          if (secret !== null) {
-            this.secret = secret
-            this.showSecret = true
-            this.buttonDisabled = true
-          } else {
-            throw new Error('Bad decryption')
-          }
+          this.decryptSecret(response.data.secret, key, iv)
+            .then((secret) => {
+              const decodedSecret = atob(new Uint8Array(secret).toBase64())
+              this.secret = decodedSecret
+              this.showSecret = true
+              this.buttonDisabled = true
+            })
+            .catch((error) => {
+              void error
+              throw new Error('Bad decryption')
+            })
         })
         .catch((error) => {
           void error
@@ -64,12 +60,20 @@ export default {
           this.showError = true
         })
     },
-    decryptSecret(secret, passphrase) {
-      try {
-        return CryptoJS.AES.decrypt(secret, passphrase).toString(CryptoJS.enc.Utf8)
-      } catch (error) {
-        void error
-      }
+    async decryptSecret(data, key, iv) {
+      const importedKey = await self.crypto.subtle.importKey(
+        'raw',
+        Uint8Array.fromBase64(key),
+        { name: 'AES-GCM' },
+        false,
+        ['decrypt']
+      )
+
+      return await self.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: Uint8Array.fromBase64(iv) },
+        importedKey,
+        Uint8Array.fromBase64(data)
+      )
     }
   }
 }
