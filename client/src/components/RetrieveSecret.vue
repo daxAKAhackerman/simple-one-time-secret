@@ -1,85 +1,79 @@
 <template>
   <b-collapse v-model="showSecret">
-    <b-form-textarea v-model="secret" rows="10" max-rows="10" readonly></b-form-textarea>
+    <b-field type="is-primary">
+      <b-input type="textarea" v-model="secret" rows="10" max-rows="10" readonly></b-input>
+    </b-field>
     <br />
   </b-collapse>
   <div v-if="showError" class="error-message">
     &nbsp;Sorry, but this secret either does not exist, has already been viewed or is expired.
   </div>
-  <b-button v-else block variant="outline-primary" :disabled="buttonDisabled" @click="getSecret"
+  <b-button v-else type="is-primary" expanded :disabled="buttonDisabled" @click="getSecret"
     >Retrieve secret</b-button
   >
 </template>
 
-<script>
+<script setup lang="ts">
 import axios from 'axios'
-import pako from 'pako'
+import { inflate } from 'pako'
+import { ref } from 'vue'
+import { b64ToUint8Array, uint8ArrayToString, arrayBufferToString } from '@/helpers'
 
-export default {
-  name: 'RetrieveSecret',
-  data() {
-    return {
-      secret: '',
-      showSecret: false,
-      buttonDisabled: false,
-      showError: false
-    }
-  },
-  methods: {
-    async getSecret() {
-      const b64String = window.location.hash.slice(1)
+const secret = ref('')
+const showSecret = ref(false)
+const buttonDisabled = ref(false)
+const showError = ref(false)
 
-      const decodedString = atob(
-        pako.inflate(Uint8Array.fromBase64(decodeURIComponent(b64String))).toBase64()
-      )
+async function getSecret(): Promise<void> {
+  const b64String = window.location.hash.slice(1)
 
-      const encryptionParams = decodedString.split(';')
-      const uuid = encryptionParams[0]
-      const iv = encryptionParams[1]
-      const key = encryptionParams[2]
+  const decodedString = uint8ArrayToString(inflate(b64ToUint8Array(decodeURIComponent(b64String))))
 
-      axios
-        .get(`/api/secret/${uuid}`)
-        .then((response) => {
-          this.decryptSecret(response.data.secret, key, iv)
-            .then((secret) => {
-              const decodedSecret = atob(new Uint8Array(secret).toBase64())
-              this.secret = decodedSecret
-              this.showSecret = true
-              this.buttonDisabled = true
-            })
-            .catch((error) => {
-              void error
-              throw new Error('Bad decryption')
-            })
+  const encryptionParams = decodedString.split(';')
+  const uuid = encryptionParams[0] as string
+  const iv = encryptionParams[1] as string
+  const key = encryptionParams[2] as string
+
+  axios
+    .get(`/api/secret/${uuid}`)
+    .then((response) => {
+      decryptSecret(response.data.secret, key, iv)
+        .then((decryptedSecret) => {
+          const decodedSecret = arrayBufferToString(decryptedSecret)
+          secret.value = decodedSecret
+          showSecret.value = true
+          buttonDisabled.value = true
         })
         .catch((error) => {
           void error
-          this.buttonDisabled = true
-          this.showError = true
+          throw new Error('Bad decryption')
         })
-    },
-    async decryptSecret(data, key, iv) {
-      const importedKey = await self.crypto.subtle.importKey(
-        'raw',
-        Uint8Array.fromBase64(key),
-        { name: 'AES-GCM' },
-        false,
-        ['decrypt']
-      )
+    })
+    .catch((error) => {
+      void error
+      buttonDisabled.value = true
+      showError.value = true
+    })
+}
+async function decryptSecret(data: string, key: string, iv: string) {
+  const importedKey = await self.crypto.subtle.importKey(
+    'raw',
+    b64ToUint8Array(key),
+    { name: 'AES-GCM' },
+    false,
+    ['decrypt'],
+  )
 
-      return await self.crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv: Uint8Array.fromBase64(iv) },
-        importedKey,
-        Uint8Array.fromBase64(data)
-      )
-    }
-  }
+  return await self.crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: b64ToUint8Array(iv) },
+    importedKey,
+    b64ToUint8Array(data),
+  )
 }
 </script>
-<style scoped>
+<style lang="css">
 .error-message {
   font-weight: bold;
-  color: #dc3545;
+  color: #bd4147;
 }
 </style>

@@ -1,53 +1,45 @@
 <template>
   <div class="secret-link">
-    <b-form-textarea
-      rows="4"
-      no-auto-shrink
-      no-resize
-      readonly
-      v-model="store.link"
-    ></b-form-textarea>
-    <b-button
-      variant="outline-primary"
-      class="copy-button"
-      v-b-tooltip.hover
-      title="Copy to clipboard"
-      @click="copyToClipboard"
-      ><b-icon-files></b-icon-files
-    ></b-button>
+    <b-field type="is-primary">
+      <b-input
+        custom-class="show-link-textarea"
+        rows="4"
+        type="textarea"
+        v-model="store.link"
+        readonly
+      >
+      </b-input>
+    </b-field>
+    <b-tooltip class="copy-button" label="Copy to clipboard" position="is-right">
+      <b-button @click="copyToClipboard" type="is-primary" outlined
+        ><img src="/src/assets/content-copy.svg" width="24" height="24" />
+      </b-button>
+    </b-tooltip>
   </div>
   <br />
-  <b-button block variant="outline-primary" @click="store.setLink('')"
-    >Create another secret</b-button
-  >
+  <b-button type="is-primary" expanded @click="store.setLink('')">Create another secret</b-button>
 </template>
 
-<script>
-import { store } from '@/store.js'
-import { makeToast } from '@/helpers.js'
+<script setup lang="ts">
+import { store } from '@/store'
+import { makeToast } from '@/helpers'
 
-export default {
-  name: 'ShowLink',
-  data() {
-    return {
-      store
-    }
-  },
-  methods: {
-    copyToClipboard() {
-      navigator.clipboard.writeText(this.store.link)
-      makeToast(this, 'The link was copied to your clipboard.', 'primary')
-    }
-  }
+import { useToast } from 'buefy'
+
+const toast = useToast()
+
+function copyToClipboard() {
+  navigator.clipboard.writeText(store.link)
+  makeToast(toast, 'The link was copied to your clipboard.', 'is-primary')
 }
 </script>
-<style scoped>
+<style lang="css">
 .copy-button {
   position: absolute;
   bottom: 0.5rem;
   right: 0.5rem;
-  opacity: 0.25;
-  filter: alpha(opacity=25);
+  opacity: 0.5;
+  filter: alpha(opacity=50);
   transition: opacity 0.25s ease-in-out;
 }
 
@@ -58,5 +50,9 @@ export default {
 
 .secret-link {
   position: relative;
+}
+
+.show-link-textarea {
+  resize: none;
 }
 </style>

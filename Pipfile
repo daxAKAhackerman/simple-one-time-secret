@@ -7,6 +7,7 @@ name = "pypi"
 fastapi = "==0.111.0"
 pymongo = "==4.7.2"
 pytz = "==2024.1"
+python-dateutil = "==2.9.0.post0"
 
 [dev-packages]
 black = "*"
@@ -16,6 +17,7 @@ pytest-cov = "*"
 pre-commit = "*"
 uvicorn = "*"
 freezegun = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.12"

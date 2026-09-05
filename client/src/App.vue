@@ -4,19 +4,15 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import HomeView from './views/HomeView.vue'
-
-export default {
-  components: {
-    HomeView
-  }
-}
 </script>
-<style>
-body {
-  color: #00060d;
-  background-color: #f2f8ff !important;
+
+<style lang="css">
+:root {
+  --bulma-primary-h: 280deg;
+  --bulma-primary-s: 37%;
+  --bulma-primary-l: 44%;
 }
 
 #app {
@@ -24,7 +20,7 @@ body {
   margin-bottom: 60px;
 }
 
-textarea {
-  background-color: #f2f8ff !important;
+a {
+  color: #7d4698;
 }
 </style>
