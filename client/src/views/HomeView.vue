@@ -23,7 +23,7 @@
 import NewSecret from '../components/NewSecret.vue'
 import RetrieveSecret from '../components/RetrieveSecret.vue'
 import ShowLink from '../components/ShowLink.vue'
-import { store } from '../store'
+import { store } from '@/store'
 
 import { computed } from 'vue'
 

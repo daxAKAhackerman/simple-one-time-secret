@@ -17,18 +17,17 @@
 import axios from 'axios'
 import { inflate } from 'pako'
 import { ref } from 'vue'
+import { b64ToUint8Array, uint8ArrayToString, arrayBufferToString } from '@/helpers'
 
 const secret = ref('')
 const showSecret = ref(false)
 const buttonDisabled = ref(false)
 const showError = ref(false)
 
-async function getSecret() {
+async function getSecret(): Promise<void> {
   const b64String = window.location.hash.slice(1)
 
-  const decodedString = String.fromCharCode(
-    ...inflate(Uint8Array.from(atob(decodeURIComponent(b64String)), (c) => c.charCodeAt(0))),
-  )
+  const decodedString = uint8ArrayToString(inflate(b64ToUint8Array(decodeURIComponent(b64String))))
 
   const encryptionParams = decodedString.split(';')
   const uuid = encryptionParams[0] as string
@@ -40,7 +39,7 @@ async function getSecret() {
     .then((response) => {
       decryptSecret(response.data.secret, key, iv)
         .then((decryptedSecret) => {
-          const decodedSecret = String.fromCharCode(...new Uint8Array(decryptedSecret))
+          const decodedSecret = arrayBufferToString(decryptedSecret)
           secret.value = decodedSecret
           showSecret.value = true
           buttonDisabled.value = true
@@ -59,22 +58,22 @@ async function getSecret() {
 async function decryptSecret(data: string, key: string, iv: string) {
   const importedKey = await self.crypto.subtle.importKey(
     'raw',
-    Uint8Array.from(atob(key), (c) => c.charCodeAt(0)),
+    b64ToUint8Array(key),
     { name: 'AES-GCM' },
     false,
     ['decrypt'],
   )
 
   return await self.crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: Uint8Array.from(atob(iv), (c) => c.charCodeAt(0)) },
+    { name: 'AES-GCM', iv: b64ToUint8Array(iv) },
     importedKey,
-    Uint8Array.from(atob(data), (c) => c.charCodeAt(0)),
+    b64ToUint8Array(data),
   )
 }
 </script>
 <style lang="css">
 .error-message {
   font-weight: bold;
-  color: #dc3545;
+  color: #bd4147;
 }
 </style>

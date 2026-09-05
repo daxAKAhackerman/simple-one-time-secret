@@ -12,7 +12,7 @@
     </b-field>
     <b-tooltip class="copy-button" label="Copy to clipboard" position="is-right">
       <b-button @click="copyToClipboard" type="is-primary" outlined
-        ><img :src="contentCopyIcon" width="24" height="24" />
+        ><img src="/src/assets/content-copy.svg" width="24" height="24" />
       </b-button>
     </b-tooltip>
   </div>
@@ -21,14 +21,12 @@
 </template>
 
 <script setup lang="ts">
-import { store } from '../store.js'
-import { makeToast } from '../helpers.js'
+import { store } from '@/store'
+import { makeToast } from '@/helpers'
 
 import { useToast } from 'buefy'
 
 const toast = useToast()
-
-const contentCopyIcon = new URL('/src/assets/content-copy.svg', import.meta.url).href
 
 function copyToClipboard() {
   navigator.clipboard.writeText(store.link)

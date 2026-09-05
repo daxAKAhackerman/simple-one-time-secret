@@ -61,16 +61,21 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { deflate } from 'pako'
-import { store } from '../store.js'
-import { makeToast } from '../helpers.js'
+import { store } from '@/store'
+import {
+  makeToast,
+  arrayBufferToB64,
+  uint8ArrayToArrayBuffer,
+  stringToUint8Array,
+  uint8ArrayToB64,
+} from '@/helpers'
 import { useToast } from 'buefy'
 
 import { ref, computed } from 'vue'
 
 const secret = ref('')
-const initExpiration = new Date()
-initExpiration.setDate(initExpiration.getDate() + 7)
-const expiration = ref(initExpiration)
+const expiration = ref(new Date())
+
 const toast = useToast()
 
 const maxExpiration = computed(() => {
@@ -79,13 +84,13 @@ const maxExpiration = computed(() => {
   return maxExp
 })
 
-function initNewSecret() {
+function initNewSecret(): void {
   const initExpiration = new Date()
   initExpiration.setDate(initExpiration.getDate() + 7)
   expiration.value = initExpiration
   secret.value = ''
 }
-async function postSecret(event: Event) {
+async function postSecret(event: Event): Promise<void> {
   event.preventDefault()
   const path = '/api/secret'
 
@@ -98,7 +103,7 @@ async function postSecret(event: Event) {
 
   const payload = {
     expiration: Math.floor(expiration.value.getTime() / 1000),
-    secret: btoa(String.fromCharCode(...new Uint8Array(encryptedSecret))),
+    secret: arrayBufferToB64(encryptedSecret),
   }
 
   axios
@@ -113,35 +118,27 @@ async function postSecret(event: Event) {
       makeToast(toast, 'Something went wrong while creating your secret', 'is-danger')
     })
 }
-async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array) {
+async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array): Promise<ArrayBuffer> {
   const importedKey = await self.crypto.subtle.importKey(
     'raw',
-    key.slice().buffer,
+    uint8ArrayToArrayBuffer(key),
     { name: 'AES-GCM' },
     false,
     ['encrypt'],
   )
-  const encodedData = Uint8Array.from(data, (c) => c.charCodeAt(0))
+  const encodedData = stringToUint8Array(data)
 
   const encrypted = await self.crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: iv.slice().buffer },
+    { name: 'AES-GCM', iv: uint8ArrayToArrayBuffer(iv) },
     importedKey,
     encodedData,
   )
 
   return encrypted
 }
-function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array) {
+function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array): void {
   const data = encodeURIComponent(
-    btoa(
-      String.fromCharCode(
-        ...new Uint8Array(
-          deflate(
-            `${uuid};${btoa(String.fromCharCode(...iv))};${btoa(String.fromCharCode(...key))}`,
-          ),
-        ),
-      ),
-    ),
+    uint8ArrayToB64(deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)),
   )
 
   const link = `${window.location.origin}/#${data}`
