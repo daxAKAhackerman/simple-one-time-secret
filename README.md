@@ -116,4 +116,4 @@ server {
 
 ---
 
-> GitHub [@daxAKAhackerman](https://github.com/daxAKAhackerman/)
+> This repository contains no AI-generated code and was made with :heart: by [@daxAKAhackerman](https://github.com/daxAKAhackerman/)
