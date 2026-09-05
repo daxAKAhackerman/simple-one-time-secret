@@ -1,9 +1,20 @@
 <template>
   <b-collapse v-model="showSecret">
-    <b-field type="is-primary">
-      <b-input type="textarea" v-model="secret" rows="10" max-rows="10" readonly></b-input>
-    </b-field>
-    <br />
+    <div class="revealed-secret">
+      <b-field type="is-primary">
+        <b-input type="textarea" v-model="secret" rows="10" max-rows="10" readonly></b-input>
+      </b-field>
+      <b-tooltip
+        class="copy-button copy-button-secret"
+        label="Copy to clipboard"
+        position="is-right"
+      >
+        <b-button @click="copyToClipboard(secret, toast)" type="is-primary" outlined
+          ><img src="/src/assets/content-copy.svg" width="24" height="24" />
+        </b-button>
+      </b-tooltip>
+      <br />
+    </div>
   </b-collapse>
   <div v-if="showError" class="error-message">
     &nbsp;Sorry, but this secret either does not exist, has already been viewed or is expired.
@@ -17,7 +28,15 @@
 import axios from 'axios'
 import { inflate } from 'pako'
 import { ref } from 'vue'
-import { b64ToUint8Array, uint8ArrayToString, arrayBufferToString } from '@/helpers'
+import {
+  b64ToUint8Array,
+  uint8ArrayToString,
+  arrayBufferToString,
+  copyToClipboard,
+} from '@/helpers'
+import { useToast } from 'buefy'
+
+const toast = useToast()
 
 const secret = ref('')
 const showSecret = ref(false)
@@ -75,5 +94,13 @@ async function decryptSecret(data: string, key: string, iv: string) {
 .error-message {
   font-weight: bold;
   color: #bd4147;
+}
+
+.copy-button-secret {
+  bottom: 2.8rem;
+}
+
+.revealed-secret {
+  position: relative;
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="container">
     <div class="card">
       <div class="card-content">
-        <h1 class="title is-1">Simple One Time Secret</h1>
+        <h1 class="title is-1"><a class="main-title" href="/">Simple One Time Secret</a></h1>
         <hr />
 
         <b-collapse v-model="formVisible">
@@ -39,3 +39,8 @@ const retrieveVisible = computed(() => {
   return location.hash !== ''
 })
 </script>
+<style lang="css">
+.main-title {
+  color: white;
+}
+</style>
