@@ -19,7 +19,7 @@ export function stringToUint8Array(data: string): Uint8Array<ArrayBuffer> {
 }
 
 export function uint8ArrayToString(data: Uint8Array): string {
-  return String.fromCharCode.apply(null, data)
+  return String.fromCharCode(...Array.from(data))
 }
 
 export function uint8ArrayToB64(data: Uint8Array): string {
