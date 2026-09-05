@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "==0.111.0"
-pymongo = "==4.7.2"
-pytz = "==2024.1"
+pymongo = "==4.18.0"
+pytz = "==2026.3.post1"
 python-dateutil = "==2.9.0.post0"
+fastapi = {extras = ["standard"], version = "==0.141.1"}
+cffi = "==2.1.1"
 
 [dev-packages]
 black = "*"
@@ -15,9 +16,8 @@ isort = "*"
 pytest = "*"
 pytest-cov = "*"
 pre-commit = "*"
-uvicorn = "*"
 freezegun = "*"
 pipenv = "*"
 
 [requires]
-python_version = "3.12"
+python_version = "3.14"

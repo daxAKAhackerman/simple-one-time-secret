@@ -31,7 +31,7 @@ test-coverage-report:
 	python3 -m pipenv run pytest --cov-report term-missing --cov=$(SRC_SERVER_DIR) $(TEST_DIR)
 
 run-backend:
-	cd $(SRC_SERVER_DIR) && python3 -m pipenv run uvicorn main:app --reload
+	cd $(SRC_SERVER_DIR) && python3 -m pipenv run fastapi dev main.py
 
 build-frontend:
 	npm run --prefix $(SRC_CLIENT_DIR) build
