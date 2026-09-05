@@ -1,66 +1,12 @@
 <template>
-  <b-form @submit="postSecret">
-    <b-form-group label="Secret:" label-for="secret-textarea">
-      <b-form-textarea
-        id="secret-textarea"
-        v-model="secret"
-        rows="20"
-        max-rows="20"
-      ></b-form-textarea>
-    </b-form-group>
+  <b-field label="Secret:">
+    <b-input type="textarea" v-model="secret"></b-input>
+  </b-field>
+  <b-field label="Expiration (local time):" message="Must be at most one month away">
+    <b-datetimepicker v-model="expiration" :max-datetime="maxExpiration"></b-datetimepicker>
+  </b-field>
 
-    <b-form-group
-      label="Expiration (local time):"
-      label-for="datepicker"
-      description="Must be at most one month away"
-    >
-      <b-row>
-        <b-col>
-          <b-input-group id="datepicker">
-            <b-form-input
-              v-model="expirationDate"
-              type="text"
-              placeholder="YYYY-MM-DD"
-              autocomplete="off"
-              required
-            ></b-form-input>
-            <b-input-group-append variant="primary">
-              <b-form-datepicker
-                v-model="expirationDate"
-                button-only
-                right
-                locale="en-US"
-                button-variant="outline-primary"
-                :max="maxExpiration"
-              ></b-form-datepicker>
-            </b-input-group-append>
-          </b-input-group>
-        </b-col>
-        <b-col>
-          <b-input-group>
-            <b-form-input
-              v-model="expirationTime"
-              type="text"
-              placeholder="HH:mm:ss"
-              required
-            ></b-form-input>
-            <b-input-group-append>
-              <b-form-timepicker
-                v-model="expirationTime"
-                button-only
-                right
-                locale="en"
-                button-variant="outline-primary"
-                show-seconds
-                :hour12="false"
-              ></b-form-timepicker>
-            </b-input-group-append>
-          </b-input-group>
-        </b-col>
-      </b-row>
-    </b-form-group>
-    <b-button type="submit" block variant="outline-primary">Create secret link</b-button>
-  </b-form>
+  <b-button @click="postSecret">Create secret link</b-button>
   <br />
   <h2>How it works</h2>
   <p>
@@ -91,116 +37,102 @@
   </ol>
   <p>
     Want more information? Good news,
-    <b-link href="https://github.com/daxAKAhackerman/simple-one-time-secret"
+    <a href="https://github.com/daxAKAhackerman/simple-one-time-secret"
       >this project is open source!
-    </b-link>
+    </a>
   </p>
 </template>
-<script>
+
+<script setup lang="ts">
 import axios from 'axios'
-import pako from 'pako'
-import { store } from '@/store.js'
-import { makeToast } from '@/helpers.js'
+import { deflate } from 'pako'
+import { store } from '../store.js'
+import { makeToast } from '../helpers.js'
+import { useToast } from 'buefy'
 
-export default {
-  name: 'NewSecret',
-  data() {
-    return {
-      secret: '',
-      expirationDate: '',
-      expirationTime: '00:00:00',
-      store
-    }
-  },
-  computed: {
-    expirationTimestamp() {
-      let expirationTime = this.expirationTime
-      if (expirationTime === '') {
-        expirationTime = '00:00:00'
-      }
-      const expirationString = `${this.expirationDate} ${expirationTime}`
-      const expirationDate = new Date(expirationString)
-      const expirationFormated = Math.floor(expirationDate.getTime() / 1000)
+import { ref, computed } from 'vue'
 
-      return expirationFormated
-    },
-    maxExpiration() {
-      const now = new Date()
-      now.setMonth(now.getMonth() + 1)
-      return now
-    }
-  },
-  methods: {
-    initNewSecret() {
-      const currentDate = new Date()
-      currentDate.setDate(currentDate.getDate() + 7)
-      currentDate.setTime(currentDate.getTime() - currentDate.getTimezoneOffset() * 60 * 1000)
+const secret = ref('')
+const initExpiration = new Date()
+initExpiration.setDate(initExpiration.getDate() + 7)
+const expiration = ref(initExpiration)
+const toast = useToast()
 
-      this.expirationDate = currentDate.toISOString().split('T')[0]
-      this.expirationTime = '00:00:00'
-      this.secret = ''
-    },
-    async postSecret(event) {
-      event.preventDefault()
-      const path = '/api/secret'
+const maxExpiration = computed(() => {
+  const maxExp = new Date()
+  maxExp.setMonth(maxExp.getMonth() + 1)
+  return maxExp
+})
 
-      const key = new Uint8Array(32)
-      const iv = new Uint8Array(12)
-      self.crypto.getRandomValues(key)
-      self.crypto.getRandomValues(iv)
-
-      const secret = await this.encryptSecret(this.secret, key, iv)
-
-      const payload = {
-        expiration: this.expirationTimestamp,
-        secret: new Uint8Array(secret).toBase64()
-      }
-
-      axios
-        .post(path, payload)
-        .then((response) => {
-          this.generateLink(response.data.id, key, iv)
-          this.initNewSecret()
-        })
-        .catch((error) => {
-          void error
-          makeToast(
-            this,
-            'Something went wrong while creating your secret. Please make sure that the expiration date/time is valid.',
-            'danger'
-          )
-        })
-    },
-    async encryptSecret(data, key, iv) {
-      const importedKey = await self.crypto.subtle.importKey(
-        'raw',
-        key,
-        { name: 'AES-GCM' },
-        false,
-        ['encrypt']
-      )
-      const encodedData = Uint8Array.fromBase64(btoa(data))
-
-      const encrypted = await self.crypto.subtle.encrypt(
-        { name: 'AES-GCM', iv },
-        importedKey,
-        encodedData
-      )
-
-      return encrypted
-    },
-    generateLink(uuid, key, iv) {
-      const data = encodeURIComponent(
-        new Uint8Array(pako.deflate(`${uuid};${iv.toBase64()};${key.toBase64()}`)).toBase64()
-      )
-
-      const link = `${window.location.origin}/#${data}`
-
-      this.store.setLink(link)
-    }
-  },
-  created() {
-    this.initNewSecret()
-  }
+function initNewSecret() {
+  const initExpiration = new Date()
+  initExpiration.setDate(initExpiration.getDate() + 7)
+  expiration.value = initExpiration
+  secret.value = ''
 }
+async function postSecret(event: Event) {
+  event.preventDefault()
+  const path = '/api/secret'
+
+  const key = new Uint8Array(32)
+  const iv = new Uint8Array(12)
+  self.crypto.getRandomValues(key)
+  self.crypto.getRandomValues(iv)
+
+  const encryptedSecret = await encryptSecret(secret.value, key, iv)
+
+  const payload = {
+    expiration: Math.floor(expiration.value.getTime() / 1000),
+    secret: btoa(String.fromCharCode(...new Uint8Array(encryptedSecret))),
+  }
+
+  axios
+    .post(path, payload)
+    .then((response) => {
+      generateLink(response.data.id, key, iv)
+      initNewSecret()
+    })
+    .catch((error) => {
+      void error
+
+      makeToast(toast, 'Something went wrong while creating your secret', 'is-danger')
+    })
+}
+async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array) {
+  const importedKey = await self.crypto.subtle.importKey(
+    'raw',
+    key.slice().buffer,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt'],
+  )
+  const encodedData = Uint8Array.from(data, (c) => c.charCodeAt(0))
+
+  const encrypted = await self.crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: iv.slice().buffer },
+    importedKey,
+    encodedData,
+  )
+
+  return encrypted
+}
+function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array) {
+  const data = encodeURIComponent(
+    btoa(
+      String.fromCharCode(
+        ...new Uint8Array(
+          deflate(
+            `${uuid};${btoa(String.fromCharCode(...iv))};${btoa(String.fromCharCode(...key))}`,
+          ),
+        ),
+      ),
+    ),
+  )
+
+  const link = `${window.location.origin}/#${data}`
+
+  store.setLink(link)
+}
+
+initNewSecret()
 </script>

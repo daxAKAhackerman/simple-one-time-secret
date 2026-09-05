@@ -1,49 +1,39 @@
 <template>
-  <b-container>
-    <b-card>
+  <div class="container">
+    <div class="card">
       <h1>Simple One Time Secret</h1>
       <hr />
-      <b-collapse :visible="formVisible">
+      <b-collapse v-model="formVisible">
         <NewSecret />
       </b-collapse>
-      <b-collapse :visible="linkVisible">
+      <b-collapse v-model="linkVisible">
         <ShowLink />
       </b-collapse>
-      <b-collapse :visible="retrieveVisible">
+      <b-collapse v-model="retrieveVisible">
         <RetrieveSecret />
       </b-collapse>
       <hr />
-    </b-card>
-  </b-container>
+    </div>
+  </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import NewSecret from '../components/NewSecret.vue'
 import RetrieveSecret from '../components/RetrieveSecret.vue'
 import ShowLink from '../components/ShowLink.vue'
-import { store } from '@/store.js'
+import { store } from '../store'
 
-export default {
-  components: {
-    NewSecret,
-    ShowLink,
-    RetrieveSecret
-  },
-  data() {
-    return {
-      store
-    }
-  },
-  computed: {
-    formVisible() {
-      return this.store.link === '' && location.hash === ''
-    },
-    linkVisible() {
-      return this.store.link !== '' && location.hash === ''
-    },
-    retrieveVisible() {
-      return location.hash !== ''
-    }
-  }
-}
+import { computed } from 'vue'
+
+const formVisible = computed(() => {
+  return store.link === '' && location.hash === ''
+})
+
+const linkVisible = computed(() => {
+  return store.link !== '' && location.hash === ''
+})
+
+const retrieveVisible = computed(() => {
+  return location.hash !== ''
+})
 </script>
