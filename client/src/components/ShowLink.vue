@@ -1,14 +1,23 @@
 <template>
   <div class="secret-link">
-    <b-input type="textarea" v-model="store.link" readonly> </b-input>
-    <b-tooltip class="copy-button" label="Copy to clipboard">
-      <b-button @click="copyToClipboard"
+    <b-field type="is-primary">
+      <b-input
+        custom-class="show-link-textarea"
+        rows="4"
+        type="textarea"
+        v-model="store.link"
+        readonly
+      >
+      </b-input>
+    </b-field>
+    <b-tooltip class="copy-button" label="Copy to clipboard" position="is-right">
+      <b-button @click="copyToClipboard" type="is-primary" outlined
         ><img :src="contentCopyIcon" width="24" height="24" />
       </b-button>
     </b-tooltip>
   </div>
   <br />
-  <b-button variant="outline-primary" @click="store.setLink('')">Create another secret</b-button>
+  <b-button type="is-primary" expanded @click="store.setLink('')">Create another secret</b-button>
 </template>
 
 <script setup lang="ts">
@@ -20,20 +29,19 @@ import { useToast } from 'buefy'
 const toast = useToast()
 
 const contentCopyIcon = new URL('/src/assets/content-copy.svg', import.meta.url).href
-console.log(contentCopyIcon)
 
 function copyToClipboard() {
   navigator.clipboard.writeText(store.link)
   makeToast(toast, 'The link was copied to your clipboard.', 'is-primary')
 }
 </script>
-<style scoped>
+<style lang="css">
 .copy-button {
   position: absolute;
   bottom: 0.5rem;
   right: 0.5rem;
-  opacity: 0.25;
-  filter: alpha(opacity=25);
+  opacity: 0.5;
+  filter: alpha(opacity=50);
   transition: opacity 0.25s ease-in-out;
 }
 
@@ -44,5 +52,9 @@ function copyToClipboard() {
 
 .secret-link {
   position: relative;
+}
+
+.show-link-textarea {
+  resize: none;
 }
 </style>

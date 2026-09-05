@@ -1,15 +1,16 @@
 <template>
-  <h1>test</h1>
-  <!-- <b-collapse v-model="showSecret">
-    <b-form-textarea v-model="secret" rows="10" max-rows="10" readonly></b-form-textarea>
+  <b-collapse v-model="showSecret">
+    <b-field type="is-primary">
+      <b-input type="textarea" v-model="secret" rows="10" max-rows="10" readonly></b-input>
+    </b-field>
     <br />
   </b-collapse>
   <div v-if="showError" class="error-message">
     &nbsp;Sorry, but this secret either does not exist, has already been viewed or is expired.
   </div>
-  <b-button v-else block variant="outline-primary" :disabled="buttonDisabled" @click="getSecret"
+  <b-button v-else type="is-primary" expanded :disabled="buttonDisabled" @click="getSecret"
     >Retrieve secret</b-button
-  > -->
+  >
 </template>
 
 <script setup lang="ts">
@@ -26,13 +27,13 @@ async function getSecret() {
   const b64String = window.location.hash.slice(1)
 
   const decodedString = String.fromCharCode(
-    ...inflate(Uint8Array.from(decodeURIComponent(atob(b64String)), (c) => c.charCodeAt(0))),
+    ...inflate(Uint8Array.from(atob(decodeURIComponent(b64String)), (c) => c.charCodeAt(0))),
   )
 
   const encryptionParams = decodedString.split(';')
-  const uuid = encryptionParams[0]
-  const iv = encryptionParams[1]
-  const key = encryptionParams[2]
+  const uuid = encryptionParams[0] as string
+  const iv = encryptionParams[1] as string
+  const key = encryptionParams[2] as string
 
   axios
     .get(`/api/secret/${uuid}`)
@@ -55,23 +56,23 @@ async function getSecret() {
       showError.value = true
     })
 }
-async function decryptSecret(data, key, iv) {
+async function decryptSecret(data: string, key: string, iv: string) {
   const importedKey = await self.crypto.subtle.importKey(
     'raw',
-    Uint8Array.fromBase64(key),
+    Uint8Array.from(atob(key), (c) => c.charCodeAt(0)),
     { name: 'AES-GCM' },
     false,
     ['decrypt'],
   )
 
   return await self.crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: Uint8Array.fromBase64(iv) },
+    { name: 'AES-GCM', iv: Uint8Array.from(atob(iv), (c) => c.charCodeAt(0)) },
     importedKey,
-    Uint8Array.fromBase64(data),
+    Uint8Array.from(atob(data), (c) => c.charCodeAt(0)),
   )
 }
 </script>
-<style scoped>
+<style lang="css">
 .error-message {
   font-weight: bold;
   color: #dc3545;

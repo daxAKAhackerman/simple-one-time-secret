@@ -1,18 +1,20 @@
 <template>
   <div class="container">
     <div class="card">
-      <h1>Simple One Time Secret</h1>
-      <hr />
-      <b-collapse v-model="formVisible">
-        <NewSecret />
-      </b-collapse>
-      <b-collapse v-model="linkVisible">
-        <ShowLink />
-      </b-collapse>
-      <b-collapse v-model="retrieveVisible">
-        <RetrieveSecret />
-      </b-collapse>
-      <hr />
+      <div class="card-content">
+        <h1 class="title is-1">Simple One Time Secret</h1>
+        <hr />
+
+        <b-collapse v-model="formVisible">
+          <NewSecret />
+        </b-collapse>
+        <b-collapse v-model="linkVisible">
+          <ShowLink />
+        </b-collapse>
+        <b-collapse v-model="retrieveVisible">
+          <RetrieveSecret />
+        </b-collapse>
+      </div>
     </div>
   </div>
 </template>

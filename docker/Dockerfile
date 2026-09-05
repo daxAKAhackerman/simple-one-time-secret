@@ -1,5 +1,5 @@
 # Build the frontend
-FROM node:22.1-alpine3.18 AS build
+FROM node:24-alpine3.24 AS build
 
 WORKDIR /build
 COPY ./client /build
