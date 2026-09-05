@@ -23,4 +23,17 @@ import HomeView from './views/HomeView.vue'
 a {
   color: #7d4698;
 }
+
+.copy-button {
+  position: absolute;
+  right: 0.5rem;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  transition: opacity 0.25s ease-in-out;
+}
+
+.copy-button:hover {
+  opacity: 0.75;
+  filter: alpha(opacity=75);
+}
 </style>
