@@ -9,7 +9,11 @@
         label="Expiration (local time):"
         message="Must be at most one month away"
       >
-        <b-datetimepicker v-model="expiration" :max-datetime="maxExpiration"></b-datetimepicker>
+        <b-datetimepicker
+          v-model="expiration"
+          :max-datetime="maxExpiration"
+          :min-datetime="minExpiration"
+        ></b-datetimepicker>
       </b-field>
     </div>
     <div class="column">
@@ -82,6 +86,10 @@ const maxExpiration = computed(() => {
   const maxExp = new Date()
   maxExp.setMonth(maxExp.getMonth() + 1)
   return maxExp
+})
+
+const minExpiration = computed(() => {
+  return new Date()
 })
 
 function initNewSecret(): void {

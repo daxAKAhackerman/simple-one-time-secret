@@ -1,4 +1,4 @@
-from typing import Iterator, Optional
+from collections.abc import Iterator
 from unittest import mock
 
 import pytest
@@ -7,13 +7,13 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture(autouse=True)
-def ots_database(request: pytest.FixtureRequest) -> Iterator[Optional[dict[str, mock.MagicMock]]]:
+def ots_database(request: pytest.FixtureRequest) -> Iterator[dict[str, mock.MagicMock] | None]:
     if "no_ots_database_mocker" in request.keywords:
         yield
     else:
-        with mock.patch("db.get_ots_database") as mocker:
-            mocker.return_value = {"secret": mock.MagicMock()}
-            yield mocker.return_value
+        with mock.patch("db.OtsDatabase") as mocker:
+            mocker.return_value.database = {"secret": mock.MagicMock()}
+            yield mocker.return_value.database
 
 
 @pytest.fixture
