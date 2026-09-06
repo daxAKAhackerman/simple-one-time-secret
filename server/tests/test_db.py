@@ -24,7 +24,7 @@ class TestOtsDatabase:
             yield mocker
 
     @pytest.mark.no_ots_database_mocker
-    def test____ini____then_attributes_set(self, mongo_client_mock: mock.MagicMock):
+    def test____init____then_attributes_set(self, mongo_client_mock: mock.MagicMock):
         ots_database = OtsDatabase()
 
         mongo_client_mock.assert_called_once_with(host="localhost", port=27017)

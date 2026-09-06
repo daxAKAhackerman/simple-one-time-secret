@@ -145,9 +145,9 @@ async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array): Pro
   return encrypted
 }
 function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array): void {
-  const d = deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)
-  console.log(d)
-  const data = encodeURIComponent(uint8ArrayToB64(d))
+  const data = encodeURIComponent(
+    uint8ArrayToB64(deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)),
+  )
 
   const link = `${window.location.origin}/#${data}`
 
