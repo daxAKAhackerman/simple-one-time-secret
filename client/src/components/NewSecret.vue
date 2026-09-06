@@ -9,7 +9,11 @@
         label="Expiration (local time):"
         message="Must be at most one month away"
       >
-        <b-datetimepicker v-model="expiration" :max-datetime="maxExpiration"></b-datetimepicker>
+        <b-datetimepicker
+          v-model="expiration"
+          :max-datetime="maxExpiration"
+          :min-datetime="minExpiration"
+        ></b-datetimepicker>
       </b-field>
     </div>
     <div class="column">
@@ -84,6 +88,10 @@ const maxExpiration = computed(() => {
   return maxExp
 })
 
+const minExpiration = computed(() => {
+  return new Date()
+})
+
 function initNewSecret(): void {
   const initExpiration = new Date()
   initExpiration.setDate(initExpiration.getDate() + 7)
@@ -137,9 +145,9 @@ async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array): Pro
   return encrypted
 }
 function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array): void {
-  const data = encodeURIComponent(
-    uint8ArrayToB64(deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)),
-  )
+  const d = deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)
+  console.log(d)
+  const data = encodeURIComponent(uint8ArrayToB64(d))
 
   const link = `${window.location.origin}/#${data}`
 

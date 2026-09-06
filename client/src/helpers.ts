@@ -22,15 +22,28 @@ export function uint8ArrayToArrayBuffer(data: Uint8Array): ArrayBuffer {
 }
 
 export function stringToUint8Array(data: string): Uint8Array<ArrayBuffer> {
-  return Uint8Array.from(data, (c) => c.charCodeAt(0))
+  return new TextEncoder().encode(data)
 }
 
 export function uint8ArrayToString(data: Uint8Array): string {
-  return String.fromCharCode(...Array.from(data))
+  return new TextDecoder('utf-8').decode(data)
 }
 
 export function uint8ArrayToB64(data: Uint8Array): string {
-  return btoa(uint8ArrayToString(data))
+  let binary = ''
+  for (const byte of data) {
+    binary += String.fromCharCode(byte)
+  }
+  return btoa(binary)
+}
+
+export function b64ToUint8Array(data: string): Uint8Array<ArrayBuffer> {
+  const binary = atob(data)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
 }
 
 export function arrayBufferToB64(data: ArrayBuffer): string {
@@ -39,8 +52,4 @@ export function arrayBufferToB64(data: ArrayBuffer): string {
 
 export function arrayBufferToString(data: ArrayBuffer): string {
   return uint8ArrayToString(new Uint8Array(data))
-}
-
-export function b64ToUint8Array(data: string): Uint8Array<ArrayBuffer> {
-  return stringToUint8Array(atob(data))
 }

@@ -46,12 +46,18 @@ const showError = ref(false)
 async function getSecret(): Promise<void> {
   const b64String = window.location.hash.slice(1)
 
-  const decodedString = uint8ArrayToString(inflate(b64ToUint8Array(decodeURIComponent(b64String))))
+  const i = b64ToUint8Array(decodeURIComponent(b64String))
+  console.log(i)
+  const decodedString = uint8ArrayToString(inflate(i))
 
   const encryptionParams = decodedString.split(';')
   const uuid = encryptionParams[0] as string
   const iv = encryptionParams[1] as string
   const key = encryptionParams[2] as string
+
+  console.log(uuid)
+  console.log(iv)
+  console.log(key)
 
   axios
     .get(`/api/secret/${uuid}`)

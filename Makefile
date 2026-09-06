@@ -40,7 +40,7 @@ run-frontend:
 	npm run --prefix $(SRC_CLIENT_DIR) dev
 
 run-database:
-	docker run -p 27017:27017 --rm mongo:7.0
+	docker run -p 27017:27017 --rm mongo:8.0
 
 start:
 	docker run -p 8080:80 -v simpleonetimesecret-db:/data/db -d --name simpleonetimesecret simpleonetimesecret

@@ -1,9 +1,10 @@
 import uuid
+from collections.abc import Iterator
 from typing import cast
 from unittest import mock
 
 import pytest
-from db import SecretStore, get_ots_database, init_db
+from db import OtsDatabase, SecretStore, init_db
 
 
 class TestInitDb:
@@ -15,16 +16,26 @@ class TestInitDb:
         secret_collection.create_index.assert_called_once_with("expiration", expireAfterSeconds=0)
 
 
-class TestGetOtsDatabase:
+class TestOtsDatabase:
+    @pytest.fixture(autouse=True)
+    def mongo_client_mock(self) -> Iterator[mock.MagicMock]:
+        with mock.patch("db.pymongo.MongoClient") as mocker:
+            mocker.return_value = {"ots": "hello"}
+            yield mocker
+
     @pytest.mark.no_ots_database_mocker
-    @mock.patch("db.pymongo.MongoClient")
-    def test__then_ots_database_returned(self, MongoClientMocker: mock.MagicMock):
-        MongoClientMocker.return_value = {"ots": "hello"}
+    def test____ini____then_attributes_set(self, mongo_client_mock: mock.MagicMock):
+        ots_database = OtsDatabase()
 
-        ots_database = get_ots_database()
+        mongo_client_mock.assert_called_once_with(host="localhost", port=27017)
+        assert ots_database.database == "hello"
 
-        MongoClientMocker.assert_called_once_with(host="localhost", port=27017)
-        assert ots_database == "hello"
+    @pytest.mark.no_ots_database_mocker
+    def test____new____when_instanciated_twice__then_same_instance(self):
+        ots_database_1 = OtsDatabase()
+        ots_database_2 = OtsDatabase()
+
+        assert ots_database_1 is ots_database_2
 
 
 class TestSecretStore:
