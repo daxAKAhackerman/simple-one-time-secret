@@ -11,10 +11,16 @@ export function makeToast(toast: ToastProgrammatic, message: string, variant: st
 }
 
 export function copyToClipboard(text: string, toast: ToastProgrammatic | undefined): void {
-  navigator.clipboard.writeText(text)
-  if (toast) {
-    makeToast(toast, 'The text was copied to your clipboard.', 'is-primary')
-  }
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      if (toast) {
+        makeToast(toast, 'The text was copied to your clipboard.', 'is-primary')
+      }
+    })
+    .catch((error) => {
+      void error
+    })
 }
 
 export function uint8ArrayToArrayBuffer(data: Uint8Array): ArrayBuffer {

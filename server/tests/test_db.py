@@ -24,18 +24,22 @@ class TestOtsDatabase:
             yield mocker
 
     @pytest.mark.no_ots_database_mocker
-    def test____init____then_attributes_set(self, mongo_client_mock: mock.MagicMock):
+    def test____init__then_attributes_set(self, mongo_client_mock: mock.MagicMock):
         ots_database = OtsDatabase()
 
         mongo_client_mock.assert_called_once_with(host="localhost", port=27017)
         assert ots_database.database == "hello"
 
     @pytest.mark.no_ots_database_mocker
-    def test____new____when_instanciated_twice__then_same_instance(self):
+    def test____new____when_instanciated_twice__then_same_instance(self, mongo_client_mock: mock.MagicMock):
+        # Reset the singleton
+        OtsDatabase.instance = None
+
         ots_database_1 = OtsDatabase()
         ots_database_2 = OtsDatabase()
 
         assert ots_database_1 is ots_database_2
+        mongo_client_mock.assert_called_once()
 
 
 class TestSecretStore:

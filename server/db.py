@@ -8,17 +8,11 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 
 
-def init_db() -> None:
-    MONGO_SECRET_COL = os.getenv("MONGO_SECRET_COL", "secret")
-    secret_collection = OtsDatabase().database[MONGO_SECRET_COL]
-    secret_collection.create_index("expiration", expireAfterSeconds=0)
-
-
 class OtsDatabase:
     database: Database
     instance: Self | None = None
 
-    def __init__(self) -> None:
+    def __init(self) -> None:
         mongo_host = os.getenv("MONGO_HOST", "localhost")
         mongo_port = os.getenv("MONGO_PORT", "27017")
         mongo_db = os.getenv("MONGO_DB", "ots")
@@ -29,6 +23,7 @@ class OtsDatabase:
     def __new__(cls) -> Self:
         if cls.instance is None:
             cls.instance = super().__new__(cls)
+            cls.instance.__init()
         return cls.instance
 
 
@@ -50,3 +45,9 @@ class SecretStore:
         if mongo_item:
             secret = Secret.from_mongo_item(**mongo_item)
             return secret
+
+
+def init_db() -> None:
+    MONGO_SECRET_COL = os.getenv("MONGO_SECRET_COL", "secret")
+    secret_collection = OtsDatabase().database[MONGO_SECRET_COL]
+    secret_collection.create_index("expiration", expireAfterSeconds=0)
