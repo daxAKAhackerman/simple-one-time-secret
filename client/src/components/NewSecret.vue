@@ -72,6 +72,7 @@ import {
   uint8ArrayToArrayBuffer,
   stringToUint8Array,
   uint8ArrayToB64,
+  concatArrayBuffers,
 } from '@/helpers'
 import { useToast } from 'buefy'
 
@@ -111,13 +112,13 @@ async function postSecret(event: Event): Promise<void> {
 
   const payload = {
     expiration: Math.floor(expiration.value.getTime() / 1000),
-    secret: arrayBufferToB64(encryptedSecret),
+    secret: arrayBufferToB64(concatArrayBuffers(uint8ArrayToArrayBuffer(iv), encryptedSecret)),
   }
 
   axios
     .post(path, payload)
     .then((response) => {
-      generateLink(response.data.id, key, iv)
+      generateLink(response.data.id, key)
       initNewSecret()
     })
     .catch((error) => {
@@ -144,10 +145,8 @@ async function encryptSecret(data: string, key: Uint8Array, iv: Uint8Array): Pro
 
   return encrypted
 }
-function generateLink(uuid: string, key: Uint8Array, iv: Uint8Array): void {
-  const data = encodeURIComponent(
-    uint8ArrayToB64(deflate(`${uuid};${uint8ArrayToB64(iv)};${uint8ArrayToB64(key)}`)),
-  )
+function generateLink(uuid: string, key: Uint8Array): void {
+  const data = encodeURIComponent(uint8ArrayToB64(deflate(`${uuid};${uint8ArrayToB64(key)}`)))
 
   const link = `${window.location.origin}/#${data}`
 
