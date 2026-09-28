@@ -59,3 +59,12 @@ export function arrayBufferToB64(data: ArrayBuffer): string {
 export function arrayBufferToString(data: ArrayBuffer): string {
   return uint8ArrayToString(new Uint8Array(data))
 }
+
+export function concatArrayBuffers(b1: ArrayBuffer, b2: ArrayBuffer): ArrayBuffer {
+  const newBuffer = new Uint8Array(b1.byteLength + b2.byteLength)
+
+  newBuffer.set(new Uint8Array(b1))
+  newBuffer.set(new Uint8Array(b2), b1.byteLength)
+
+  return uint8ArrayToArrayBuffer(newBuffer)
+}

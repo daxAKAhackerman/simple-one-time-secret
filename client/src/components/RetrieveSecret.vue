@@ -50,13 +50,12 @@ async function getSecret(): Promise<void> {
 
   const encryptionParams = decodedString.split(';')
   const uuid = encryptionParams[0] as string
-  const iv = encryptionParams[1] as string
-  const key = encryptionParams[2] as string
+  const key = encryptionParams[1] as string
 
   axios
     .get(`/api/secret/${uuid}`)
     .then((response) => {
-      decryptSecret(response.data.secret, key, iv)
+      decryptSecret(response.data.secret, key)
         .then((decryptedSecret) => {
           const decodedSecret = arrayBufferToString(decryptedSecret)
           secret.value = decodedSecret
@@ -74,7 +73,9 @@ async function getSecret(): Promise<void> {
       showError.value = true
     })
 }
-async function decryptSecret(data: string, key: string, iv: string) {
+async function decryptSecret(data: string, key: string) {
+  const dataBinary = b64ToUint8Array(data)
+
   const importedKey = await self.crypto.subtle.importKey(
     'raw',
     b64ToUint8Array(key),
@@ -84,9 +85,9 @@ async function decryptSecret(data: string, key: string, iv: string) {
   )
 
   return await self.crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: b64ToUint8Array(iv) },
+    { name: 'AES-GCM', iv: dataBinary.slice(0, 12) },
     importedKey,
-    b64ToUint8Array(data),
+    dataBinary.slice(12),
   )
 }
 </script>
